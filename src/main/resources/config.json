@@ -1,0 +1,38 @@
+# You can add comments in the config like this (prefix #)
+# Always put the comment on its own line! Otherwise it will get mixed up with the JSON
+# Channel types: default(the first public channel the user goes to after join), private, global
+# Add as many channels as you want!
+# You can use color codes in the Motd!
+
+{
+  "password": "",
+  "port": 38000,
+  "rsa_length": 2048,
+  "channels":
+    [
+      {
+        "name":"global",
+        "type":"default"
+      },
+      {
+        "name":"channel2",
+        "type":"private",
+        "password": "secret"
+      },
+      {
+        "name":"channel3",
+        "type":"public"
+      }
+    ],
+  "restricted_usernames":
+    [
+      "admin",
+      "administrator",
+      "dummy"
+    ],
+  "resitricted_commands":
+    [
+
+    ],
+  "motd": "Hello, welcome to our chat server! :)"
+}

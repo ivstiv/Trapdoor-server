@@ -1,0 +1,29 @@
+{
+  "password": "",
+  "port": 31233,
+  "rsa_length": 2048,
+  "channels":
+  [
+    #these are the channels
+    {
+      "name":"global",
+      "type":"default"
+    },
+    {
+      "name":"channel2",
+      "type":"private",
+      "password": "secret"
+    },
+    {
+      "name":"channel3",
+      "type":"public"
+    }
+  ],
+  "restricted_usernames":
+  [
+    "admin",
+    "administrator",
+    "dummy"
+  ],
+  "motd": "Hello, welcome to our chat server! :)"
+}
