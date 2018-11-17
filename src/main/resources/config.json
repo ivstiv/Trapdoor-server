@@ -8,6 +8,7 @@
   "password": "",
   "port": 38000,
   "rsa_length": 2048,
+  "slots": 50,
   "channels":
     [
       {
