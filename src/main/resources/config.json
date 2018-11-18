@@ -25,7 +25,7 @@
         "type":"public"
       }
     ],
-  "restricted_usernames":
+  "forbidden_usernames":
     [
       "admin",
       "administrator",

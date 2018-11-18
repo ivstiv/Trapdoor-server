@@ -2,19 +2,27 @@ package communication;
 
 import communication.security.AES;
 import communication.security.RSA;
+import data.Request;
+import exceptions.MalformedRequestException;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 
 public abstract class AbstractHandler extends Thread{
 
+    // Communication objects
     private Socket client;
     private BufferedReader in;
     private PrintWriter out;
 
+    // Encryption objects
     private AES aes;
+
+    //User data
+
 
     public AbstractHandler(Socket client) {
         this.client = client;
@@ -57,11 +65,28 @@ public abstract class AbstractHandler extends Thread{
         return rsa;
     }
 
-    protected String readRequest() throws IOException{
-        String encrypted = in.readLine();
-        if(encrypted == null) return null; // will be "caught" on upper stage
+    protected Request readRequest() throws MalformedRequestException {
+        String encrypted = null;
+        try {
+            encrypted = in.readLine();
+        }catch (SocketException e) {
+            //Kicks in when the client drops the connection unexpectedly
+            System.out.println("[Handler]Client disconnected unexpectedly!");
+        }catch (IOException e) {
+                e.printStackTrace();
+            }
+        if (encrypted == null) { // TO-DO: do something about this ! reads null on disconnect
+            System.out.println("[Handler]Client disconnected!");
+            // TODO: 18-Nov-18 form a disconnect request here
+        }
+        String decrypted = aes.decrypt(encrypted);
+        System.out.println("INCOMING:"+decrypted);
 
-        return aes.decrypt(encrypted);
+        return new Request(decrypted);
+    }
+
+    protected void sendRequest(Request r) {
+        send(r.toString());
     }
 
     protected synchronized void send(String msg) {
