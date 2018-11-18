@@ -26,8 +26,8 @@ public abstract class AbstractHandler extends Thread{
     private AES aes;
 
     //User data
-    private String username;
-    private Channel activeChannel;
+    protected String username;
+    protected Channel activeChannel;
 
     public AbstractHandler(Socket client) {
         this.client = client;

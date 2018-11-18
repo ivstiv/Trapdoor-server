@@ -3,6 +3,9 @@ package communication;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import core.Config;
+import core.ServerWrapper;
+import core.ServiceLocator;
+import data.ChannelType;
 import data.Request;
 import data.RequestType;
 import exceptions.MalformedRequestException;
@@ -41,7 +44,7 @@ public class RequestHandler extends AbstractHandler {
                     String action = r.getContent().get("action").getAsString();
                     if(action.equals("change-channel")) {
                         // TODO: 18-Nov-18 service locator needed here to access the server wrapper
-                        // TODO: 18-Nov-18 setup the appropriate channels 
+                        // TODO: 18-Nov-18 setup the appropriate channels
                     }
                     break;
                 case DISCONNECT:
@@ -50,6 +53,8 @@ public class RequestHandler extends AbstractHandler {
                 case CONNECT:
                     String username = r.getContent().get("username").getAsString();
                     String password = r.getContent().get("password").getAsString();
+
+                    //server password check
                     if(!Config.getString("password").equals(password)) {
                         JsonObject payload = new JsonObject();
                         payload.addProperty("code", 200);
@@ -57,7 +62,8 @@ public class RequestHandler extends AbstractHandler {
                         sendRequest(req);
                         break;
                     }
-                    // TODO: 18-Nov-18 check if the usernames already exists and return code 201
+
+                    // forbidden username check
                     if(Config.getJsonArray("forbidden_usernames").contains(new JsonPrimitive(username))) {
                         JsonObject payload = new JsonObject();
                         payload.addProperty("code", 202);
@@ -65,8 +71,25 @@ public class RequestHandler extends AbstractHandler {
                         sendRequest(req);
                         break;
                     }
-                    // TODO: 18-Nov-18 create user object and assign a default channel
-                    // TODO: 18-Nov-18 show motd and send available commands to the client
+
+                    // existing username check
+                    ServerWrapper server = ServiceLocator.getService(ServerWrapper.class);
+                    if(server.isUserOnline(username)) {
+                        JsonObject payload = new JsonObject();
+                        payload.addProperty("code", 201);
+                        Request req = new Request(RequestType.RESPONSE, payload);
+                        sendRequest(req);
+                        break;
+                    }
+
+                    // setup the user's channel and send motd
+                    this.username = username;
+                    this.activeChannel = server.getChannel(ChannelType.DEFAULT);
+                    JsonObject payload = new JsonObject();
+                    payload.addProperty("message", Config.getString("motd"));
+                    Request motd = new Request(RequestType.MSG, payload);
+                    sendRequest(motd);
+                    // TODO: 18-Nov-18 send available commands when they got implemented :D
                     break;
             }
         }

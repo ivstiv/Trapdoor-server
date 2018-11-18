@@ -31,7 +31,7 @@
       "administrator",
       "dummy"
     ],
-  "resitricted_commands":
+  "forbidden_commands":
     [
 
     ],

@@ -3,6 +3,7 @@ package data;
 import com.google.gson.JsonObject;
 import communication.AbstractHandler;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -39,5 +40,21 @@ public class Channel {
             Request req = new Request(RequestType.MSG, content);
             client.sendRequest(req);
         }
+    }
+
+    public ChannelType getType() {
+        return type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public Set<AbstractHandler> getClients() {
+        return Collections.unmodifiableSet(clients);
     }
 }
