@@ -20,6 +20,8 @@ public class RequestHandler extends AbstractHandler {
 
     @Override
     public void run() {
+        initialiseStreams();
+
         while (true) {
             Request r = null;
             try {
@@ -89,6 +91,7 @@ public class RequestHandler extends AbstractHandler {
                     payload.addProperty("message", Config.getString("motd"));
                     Request motd = new Request(RequestType.MSG, payload);
                     sendRequest(motd);
+                    server.addConnectedClient(this);
                     // TODO: 18-Nov-18 send available commands when they got implemented :D
                     break;
             }

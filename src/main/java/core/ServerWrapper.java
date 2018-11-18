@@ -17,6 +17,10 @@ public class ServerWrapper {
     private List<Channel> channels = new ArrayList<>();
     private Set<RequestHandler> connectedClients = new HashSet<>();
 
+    public void addConnectedClient(RequestHandler r) {
+        connectedClients.add(r);
+    }
+
     public boolean isUserOnline(String username) {
         Predicate<RequestHandler> filter = handler -> handler.getUsername().equals(username);
         return connectedClients.stream().anyMatch(filter);

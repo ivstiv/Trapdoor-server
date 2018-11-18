@@ -31,7 +31,6 @@ public abstract class AbstractHandler extends Thread{
 
     public AbstractHandler(Socket client) {
         this.client = client;
-        initialiseStreams();
     }
 
     public String getUsername() {return this.username;}
@@ -45,10 +44,22 @@ public abstract class AbstractHandler extends Thread{
             // setup the AES encryption of the communication
             RSA tunnel = getRSAHandshake();
             String aesSecret = in.readLine();
-            if (aesSecret == null) { // TO-DO: do something about this ! reads null on disconnect
+            String aesSignature = in.readLine();
+
+            if (aesSecret == null || aesSignature == null) { // TO-DO: do something about this ! reads null on disconnect
                 System.out.println("[Handler]Host disconnected!");
             }
-            aes = new AES(tunnel.decrypt(aesSecret));
+            System.out.println("AES secret:"+tunnel.decrypt(aesSecret));
+            System.out.println("AES signature:"+aesSignature);
+
+            if(tunnel.verify(tunnel.decrypt(aesSecret), aesSignature)) {
+                aes = new AES(tunnel.decrypt(aesSecret));
+                System.out.println("AES setup finished!");
+            }else{
+                System.out.println("AES signature failed!");
+                // TODO: 18-Nov-18 stop the connection and send status code
+            }
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -57,18 +68,18 @@ public abstract class AbstractHandler extends Thread{
 
     private RSA getRSAHandshake() throws IOException, NoSuchAlgorithmException {
         RSA rsa = new RSA();
-        // send the public key to the server
+        // send the public key to the client
         out.println(rsa.getPublicKeyBase64());
         out.flush();
 
-        // wait for the public key of the server
-        String serverKey = in.readLine();
-        if (serverKey == null) { // TO-DO: do something about this ! reads null on disconnect
+        // wait for the public key of the client
+        String clientKey = in.readLine();
+        if (clientKey == null) { // TO-DO: do something about this ! reads null on disconnect
             System.out.println("[Handler]Host disconnected!");
         }
 
-        // register the server public key in the RSA object
-        rsa.setRemotePublicKey(serverKey);
+        // register the client public key in the RSA object
+        rsa.setRemotePublicKey(clientKey);
         System.out.println("RSA tunnel initialised!");
         return rsa;
     }
@@ -77,6 +88,7 @@ public abstract class AbstractHandler extends Thread{
         String encrypted = null;
         try {
             encrypted = in.readLine();
+            System.out.println("Encrypted:"+encrypted);
         }catch (SocketException e) {
             //Kicks in when the client drops the connection unexpectedly
             System.out.println("[Handler]Client disconnected unexpectedly!");
@@ -89,6 +101,7 @@ public abstract class AbstractHandler extends Thread{
             System.out.println("[Handler]Client disconnected!");
             return new Request(RequestType.DISCONNECT, new JsonObject());
         }
+
         String decrypted = aes.decrypt(encrypted);
         System.out.println("INCOMING:"+decrypted);
 
