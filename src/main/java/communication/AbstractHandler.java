@@ -34,6 +34,9 @@ public abstract class AbstractHandler extends Thread{
         initialiseStreams();
     }
 
+    public String getUsername() {return this.username;}
+    public Channel getActiveChannel() {return  this.activeChannel;}
+
     protected void initialiseStreams() {
         try {
             in = new BufferedReader(new InputStreamReader(client.getInputStream(), StandardCharsets.UTF_8));
@@ -92,7 +95,7 @@ public abstract class AbstractHandler extends Thread{
         return new Request(decrypted);
     }
 
-    protected void sendRequest(Request r) {
+    public void sendRequest(Request r) {
         send(r.toString());
     }
 
