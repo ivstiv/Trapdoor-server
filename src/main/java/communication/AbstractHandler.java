@@ -1,8 +1,12 @@
 package communication;
 
+import com.google.gson.JsonObject;
 import communication.security.AES;
 import communication.security.RSA;
+import data.Channel;
 import data.Request;
+import data.RequestType;
+import data.User;
 import exceptions.MalformedRequestException;
 
 import java.io.*;
@@ -22,7 +26,8 @@ public abstract class AbstractHandler extends Thread{
     private AES aes;
 
     //User data
-
+    private String username;
+    private Channel activeChannel;
 
     public AbstractHandler(Socket client) {
         this.client = client;
@@ -72,12 +77,14 @@ public abstract class AbstractHandler extends Thread{
         }catch (SocketException e) {
             //Kicks in when the client drops the connection unexpectedly
             System.out.println("[Handler]Client disconnected unexpectedly!");
+            return new Request(RequestType.DISCONNECT, new JsonObject());
         }catch (IOException e) {
+            System.out.println("[Handler]IOException in readRequest():");
                 e.printStackTrace();
             }
         if (encrypted == null) { // TO-DO: do something about this ! reads null on disconnect
             System.out.println("[Handler]Client disconnected!");
-            // TODO: 18-Nov-18 form a disconnect request here
+            return new Request(RequestType.DISCONNECT, new JsonObject());
         }
         String decrypted = aes.decrypt(encrypted);
         System.out.println("INCOMING:"+decrypted);
@@ -90,7 +97,7 @@ public abstract class AbstractHandler extends Thread{
     }
 
     protected synchronized void send(String msg) {
-        System.out.println("Sending:"+msg);
+        System.out.println("OUTGOING:"+msg);
         out.println(aes.encrypt(msg));
         out.flush();
     }
