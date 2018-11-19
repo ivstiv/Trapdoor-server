@@ -21,6 +21,7 @@ public class Channel {
 
     public void addClient(AbstractHandler client) {
         clients.add(client);
+        broadcastPrint("&1&a[Server]&g"+client.getUsername()+" has joined!");
     }
 
     public void removeClient(String username) {
@@ -33,11 +34,23 @@ public class Channel {
         System.out.println("[WARNING]Trying to remove a non-existing handler from channel '"+name+"':"+username);
     }
 
-    public void broadcast(String message) {
+    public void broadcastMsg(AbstractHandler client, String message) {
+        JsonObject content = new JsonObject();
+        content.addProperty("sender", client.getUsername());
+        content.addProperty("message", message);
+        Request req = new Request(RequestType.MSG, content);
+        for(AbstractHandler c : clients) {
+            if(!c.equals(client)) // send to everyone except to him
+                c.sendRequest(req);
+        }
+    }
+
+    public void broadcastPrint(String message) {
+        JsonObject content = new JsonObject();
+        content.addProperty("action", "print");
+        content.addProperty("message", message);
+        Request req = new Request(RequestType.ACTION, content);
         for(AbstractHandler client : clients) {
-            JsonObject content = new JsonObject();
-            content.addProperty("msg", message);
-            Request req = new Request(RequestType.MSG, content);
             client.sendRequest(req);
         }
     }

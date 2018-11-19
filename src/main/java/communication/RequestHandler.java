@@ -42,7 +42,8 @@ public class RequestHandler extends AbstractHandler {
 
             switch(r.getType()) {
                 case MSG:
-                    getActiveChannel().broadcast(r.getContent().get("msg").getAsString());
+                    String message = r.getContent().get("message").getAsString();
+                    getActiveChannel().broadcastMsg(this, message);
                     break;
                 case ACTION:
                     String action = r.getContent().get("action").getAsString();
@@ -87,24 +88,26 @@ public class RequestHandler extends AbstractHandler {
                         break;
                     }
 
-                    // setup the user's channel and send motd
+                    // send motd
+                    JsonObject payload = new JsonObject();
+                    payload.addProperty("action", "print");
+                    payload.addProperty("message", Config.getString("motd"));
+                    Request motd = new Request(RequestType.ACTION, payload);
+                    sendRequest(motd);
+
+                    // setup the user's channel
                     this.username = username;
                     this.activeChannel = server.getChannel(ChannelType.DEFAULT);
                     activeChannel.addClient(this);
                     server.addConnectedClient(this);
-                    // send motd
-                    JsonObject payload = new JsonObject();
-                    payload.addProperty("action", "show_motd");
-                    payload.addProperty("message", Config.getString("motd"));
-                    Request motd = new Request(RequestType.ACTION, payload);
-                    sendRequest(motd);
+
                     // update status bar
                     payload = new JsonObject();
                     payload.addProperty("action", "update_statusbar");
                     payload.addProperty("channel", activeChannel.getName());
                     Request statusBar = new Request(RequestType.ACTION, payload);
                     sendRequest(statusBar);
-                    // TODO: 18-Nov-18 send available commands when they got implemented :D
+                    // TODO: 18-Nov-18 send available commands when they get implemented :D
                     break;
             }
         }
