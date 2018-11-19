@@ -30,7 +30,7 @@ public class Channel {
                 return;
             }
         }
-        System.out.println("[WARNING]Trying to remove a non-existing handler from channel:"+username);
+        System.out.println("[WARNING]Trying to remove a non-existing handler from channel '"+name+"':"+username);
     }
 
     public void broadcast(String message) {

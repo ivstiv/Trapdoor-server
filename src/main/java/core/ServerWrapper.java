@@ -20,6 +20,11 @@ public class ServerWrapper {
     public void addConnectedClient(RequestHandler r) {
         connectedClients.add(r);
     }
+    public void removeConnectedClient(RequestHandler r) {
+        connectedClients.remove(r);
+        if(r.getActiveChannel() != null)
+            r.getActiveChannel().removeClient(r.getUsername());
+    }
 
     public boolean isUserOnline(String username) {
         Predicate<RequestHandler> filter = handler -> handler.getUsername().equals(username);
@@ -82,7 +87,6 @@ public class ServerWrapper {
                         }
                         client = new RequestHandler(socket);
                         client.start();
-                        System.out.println("Connected client");
                     }
                 }catch (Exception e) {
                     e.printStackTrace();

@@ -49,8 +49,6 @@ public abstract class AbstractHandler extends Thread{
             if (aesSecret == null || aesSignature == null) { // TO-DO: do something about this ! reads null on disconnect
                 System.out.println("[Handler]Host disconnected!");
             }
-            System.out.println("AES secret:"+tunnel.decrypt(aesSecret));
-            System.out.println("AES signature:"+aesSignature);
 
             if(tunnel.verify(tunnel.decrypt(aesSecret), aesSignature)) {
                 aes = new AES(tunnel.decrypt(aesSecret));

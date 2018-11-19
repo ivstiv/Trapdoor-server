@@ -20,8 +20,10 @@ public class RequestHandler extends AbstractHandler {
 
     @Override
     public void run() {
+        System.out.println("Starting Handler thread:"+this.toString());
         initialiseStreams();
 
+        ServerWrapper server = ServiceLocator.getService(ServerWrapper.class);
         while (true) {
             Request r = null;
             try {
@@ -31,7 +33,7 @@ public class RequestHandler extends AbstractHandler {
                 continue; // skip the iteration if the request is invalid
             }
 
-            // Confirm the received request !!!
+            // send confirmation if it is not disconnect request
             JsonObject content = new JsonObject();
             content.addProperty("code", 100);
             content.addProperty("timestamp", r.getTimestamp());
@@ -51,6 +53,8 @@ public class RequestHandler extends AbstractHandler {
                     break;
                 case DISCONNECT:
                     // may be close the streams first
+                    System.out.println("Stopping Handler thread:"+this.toString());
+                    server.removeConnectedClient(this);
                     return;
                 case CONNECT:
                     String username = r.getContent().get("username").getAsString();
@@ -75,7 +79,6 @@ public class RequestHandler extends AbstractHandler {
                     }
 
                     // existing username check
-                    ServerWrapper server = ServiceLocator.getService(ServerWrapper.class);
                     if(server.isUserOnline(username)) {
                         JsonObject payload = new JsonObject();
                         payload.addProperty("code", 201);
@@ -87,11 +90,20 @@ public class RequestHandler extends AbstractHandler {
                     // setup the user's channel and send motd
                     this.username = username;
                     this.activeChannel = server.getChannel(ChannelType.DEFAULT);
-                    JsonObject payload = new JsonObject();
-                    payload.addProperty("message", Config.getString("motd"));
-                    Request motd = new Request(RequestType.MSG, payload);
-                    sendRequest(motd);
+                    activeChannel.addClient(this);
                     server.addConnectedClient(this);
+                    // send motd
+                    JsonObject payload = new JsonObject();
+                    payload.addProperty("action", "show_motd");
+                    payload.addProperty("message", Config.getString("motd"));
+                    Request motd = new Request(RequestType.ACTION, payload);
+                    sendRequest(motd);
+                    // update status bar
+                    payload = new JsonObject();
+                    payload.addProperty("action", "update_statusbar");
+                    payload.addProperty("channel", activeChannel.getName());
+                    Request statusBar = new Request(RequestType.ACTION, payload);
+                    sendRequest(statusBar);
                     // TODO: 18-Nov-18 send available commands when they got implemented :D
                     break;
             }
