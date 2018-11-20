@@ -1,4 +1,4 @@
-package data;
+package communication;
 
 
 import com.google.gson.*;

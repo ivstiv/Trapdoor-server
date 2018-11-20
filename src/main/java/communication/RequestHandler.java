@@ -2,17 +2,16 @@ package communication;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import commands.CommandSender;
 import core.Config;
 import core.ServerWrapper;
 import core.ServiceLocator;
 import data.ChannelType;
-import data.Request;
-import data.RequestType;
 import exceptions.MalformedRequestException;
 
 import java.net.Socket;
 
-public class RequestHandler extends AbstractHandler {
+public class RequestHandler extends AbstractHandler implements CommandSender {
 
     public RequestHandler(Socket client) {
         super(client);
@@ -43,7 +42,15 @@ public class RequestHandler extends AbstractHandler {
             switch(r.getType()) {
                 case MSG:
                     String message = r.getContent().get("message").getAsString();
-                    getActiveChannel().broadcastMsg(this, message);
+
+                    if(message.startsWith("/")) {
+                        // dispatch the command
+                        String name = message.split(" ")[0].replaceAll("/", "");
+                        String[] args = message.substring(name.length()+1).split(" ");
+                        server.dispatchCommand(this, name, args);
+                    }else{
+                        getActiveChannel().broadcastMsg(this, message); // forward the message
+                    }
                     break;
                 case ACTION:
                     String action = r.getContent().get("action").getAsString();
@@ -61,13 +68,24 @@ public class RequestHandler extends AbstractHandler {
                     String username = r.getContent().get("username").getAsString();
                     String password = r.getContent().get("password").getAsString();
 
-                    //server password check
-                    if(!Config.getString("password").equals(password)) {
+                    // check if the server is full
+                    if(server.connectedClients() >= Config.getInt("slots")) {
                         JsonObject payload = new JsonObject();
-                        payload.addProperty("code", 200);
+                        payload.addProperty("code", 203);
                         Request req = new Request(RequestType.RESPONSE, payload);
                         sendRequest(req);
                         break;
+                    }
+
+                    //server password check
+                    if(!Config.getString("password").isEmpty()) {
+                        if(!Config.getString("password").equals(password)) {
+                            JsonObject payload = new JsonObject();
+                            payload.addProperty("code", 200);
+                            Request req = new Request(RequestType.RESPONSE, payload);
+                            sendRequest(req);
+                            break;
+                        }
                     }
 
                     // forbidden username check

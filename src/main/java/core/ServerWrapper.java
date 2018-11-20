@@ -2,7 +2,14 @@ package core;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import commands.ChannelsCommand;
+import commands.Command;
+import commands.CommandRegister;
+import commands.CommandSender;
+import communication.Request;
 import communication.RequestHandler;
+import communication.RequestType;
 import data.Channel;
 import data.ChannelType;
 
@@ -16,6 +23,28 @@ public class ServerWrapper {
 
     private List<Channel> channels = new ArrayList<>();
     private Set<RequestHandler> connectedClients = new HashSet<>();
+    private CommandRegister commandRegister = new CommandRegister();
+
+    public void dispatchCommand(CommandSender sender, String name, String[] args) {
+        Command cmd = new Command(sender, name, args);
+        if(!commandRegister.dispatch(cmd)) {
+
+            if(sender instanceof RequestHandler) {
+
+                RequestHandler client = (RequestHandler) sender;
+
+                JsonObject payload = new JsonObject();
+                payload.addProperty("code", 204); // command doesnt exist!
+                Request req = new Request(RequestType.RESPONSE, payload);
+                client.sendRequest(req);
+            }
+        }
+
+    }
+
+    public int connectedClients() {
+        return connectedClients.size();
+    }
 
     public void addConnectedClient(RequestHandler r) {
         connectedClients.add(r);
@@ -29,6 +58,10 @@ public class ServerWrapper {
     public boolean isUserOnline(String username) {
         Predicate<RequestHandler> filter = handler -> handler.getUsername().equals(username);
         return connectedClients.stream().anyMatch(filter);
+    }
+
+    public List<Channel> getChannels() {
+        return Collections.unmodifiableList(channels);
     }
 
     public Channel getChannel(ChannelType type) {
@@ -64,6 +97,8 @@ public class ServerWrapper {
                 channels.add(new Channel(type, name, null));
             }
         }
+
+        commandRegister.registerCommand("channels", new ChannelsCommand());
     }
 
     public void start() {

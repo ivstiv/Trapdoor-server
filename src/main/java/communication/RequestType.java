@@ -1,4 +1,4 @@
-package data;
+package communication;
 
 public enum RequestType {
     CONNECT, DISCONNECT, ACTION, RESPONSE, MSG, POISON_PILL
@@ -14,4 +14,6 @@ public enum RequestType {
         200 - Wrong server password
         201 - Username already taken
         202 - Forbidden username
+        203 - The server is full
+        204 - Unknown command
  */

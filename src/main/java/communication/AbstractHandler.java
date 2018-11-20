@@ -4,9 +4,6 @@ import com.google.gson.JsonObject;
 import communication.security.AES;
 import communication.security.RSA;
 import data.Channel;
-import data.Request;
-import data.RequestType;
-import data.User;
 import exceptions.MalformedRequestException;
 
 import java.io.*;
@@ -86,7 +83,6 @@ public abstract class AbstractHandler extends Thread{
         String encrypted = null;
         try {
             encrypted = in.readLine();
-            System.out.println("Encrypted:"+encrypted);
         }catch (SocketException e) {
             //Kicks in when the client drops the connection unexpectedly
             System.out.println("[Handler]Client disconnected unexpectedly!");

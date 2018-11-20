@@ -2,6 +2,8 @@ package data;
 
 import com.google.gson.JsonObject;
 import communication.AbstractHandler;
+import communication.Request;
+import communication.RequestType;
 
 import java.util.Collections;
 import java.util.HashSet;
