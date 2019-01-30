@@ -54,10 +54,6 @@ public class RequestHandler extends AbstractHandler implements CommandSender {
                     break;
                 case ACTION:
                     String action = r.getContent().get("action").getAsString();
-                    if(action.equals("change-channel")) {
-                        // TODO: 18-Nov-18 service locator needed here to access the server wrapper
-                        // TODO: 18-Nov-18 setup the appropriate channels
-                    }
                     break;
                 case DISCONNECT:
                     // may be close the streams first

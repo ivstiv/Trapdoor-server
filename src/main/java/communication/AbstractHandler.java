@@ -2,6 +2,7 @@ package communication;
 
 import com.google.gson.JsonObject;
 import communication.security.AES;
+import communication.security.AES_OLD;
 import communication.security.RSA;
 import data.Channel;
 import exceptions.MalformedRequestException;
@@ -54,7 +55,6 @@ public abstract class AbstractHandler extends Thread{
                 System.out.println("AES signature failed!");
                 // TODO: 18-Nov-18 stop the connection and send status code
             }
-
 
         } catch (Exception e) {
             e.printStackTrace();

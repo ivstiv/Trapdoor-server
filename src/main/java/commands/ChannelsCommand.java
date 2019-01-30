@@ -27,7 +27,6 @@ public class ChannelsCommand implements CommandExecutor{
                 channelsText.append(entry);
             }
 
-
             JsonObject payload = new JsonObject();
             payload.addProperty("action", "print");
             payload.addProperty("message", channelsText.toString());

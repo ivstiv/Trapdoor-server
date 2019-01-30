@@ -3,10 +3,7 @@ package core;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import commands.ChannelsCommand;
-import commands.Command;
-import commands.CommandRegister;
-import commands.CommandSender;
+import commands.*;
 import communication.Request;
 import communication.RequestHandler;
 import communication.RequestType;
@@ -99,6 +96,7 @@ public class ServerWrapper {
         }
 
         commandRegister.registerCommand("channels", new ChannelsCommand());
+        commandRegister.registerCommand("online", new OnlineCommand());
     }
 
     public void start() {
