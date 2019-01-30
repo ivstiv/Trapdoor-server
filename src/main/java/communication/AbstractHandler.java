@@ -83,21 +83,22 @@ public abstract class AbstractHandler extends Thread{
         String encrypted = null;
         try {
             encrypted = in.readLine();
-        }catch (SocketException e) {
+        } catch (SocketException e) {
             //Kicks in when the client drops the connection unexpectedly
-            System.out.println("[Handler]Client disconnected unexpectedly!");
+            System.out.println("[Handler]Client disconnected!");
             return new Request(RequestType.DISCONNECT, new JsonObject());
-        }catch (IOException e) {
+
+        } catch (IOException e) {
             System.out.println("[Handler]IOException in readRequest():");
-                e.printStackTrace();
-            }
-        if (encrypted == null) { // TO-DO: do something about this ! reads null on disconnect
+            e.printStackTrace();
+        }
+        if (encrypted == null) { // reads null on disconnect e.g end of the stream
             System.out.println("[Handler]Client disconnected!");
             return new Request(RequestType.DISCONNECT, new JsonObject());
         }
 
         String decrypted = aes.decrypt(encrypted);
-        System.out.println("INCOMING:"+decrypted);
+        System.out.println("IN:"+decrypted);
 
         return new Request(decrypted);
     }
@@ -107,9 +108,18 @@ public abstract class AbstractHandler extends Thread{
     }
 
     protected synchronized void send(String msg) {
-        System.out.println("OUTGOING:"+msg);
+        System.out.println("OUT:"+msg);
         out.println(aes.encrypt(msg));
         out.flush();
+    }
+
+    public void stopConnection() {
+        try {
+            client.close();
+            // readRequest() will send a DISCONNECT request to the RequestHandler because it reads null
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

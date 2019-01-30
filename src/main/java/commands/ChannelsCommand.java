@@ -9,21 +9,22 @@ import communication.RequestType;
 import core.ServerWrapper;
 import core.ServiceLocator;
 import data.Channel;
+import data.DataLoader;
 
 public class ChannelsCommand implements CommandExecutor{
-
-    private static ServerWrapper server = ServiceLocator.getService(ServerWrapper.class);
 
     @Override
     public void onCommand(CommandSender sender, String command, String[] args) {
 
         if(sender instanceof RequestHandler) {
 
+            ServerWrapper server = ServiceLocator.getService(ServerWrapper.class);
+            DataLoader dl = ServiceLocator.getService(DataLoader.class);
             RequestHandler client = (RequestHandler) sender;
 
-            StringBuilder channelsText = new StringBuilder("&1&dAvailable channels:");
+            StringBuilder channelsText = new StringBuilder(dl.getMessage("available-channels"));
             for(Channel ch : server.getChannels()) {
-                String entry = String.format("\n&g   - [%s] %s %d", ch.getName(), ch.getType().toString(), ch.getClients().size());
+                String entry = String.format("\n~g   - [%s] ~s ~d", ch.getName(), ch.getType().toString(), ch.getClients().size());
                 channelsText.append(entry);
             }
 

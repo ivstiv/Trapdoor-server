@@ -95,8 +95,12 @@ public class ServerWrapper {
             }
         }
 
+        commandRegister.registerCommand("help", new HelpCommand());
         commandRegister.registerCommand("channels", new ChannelsCommand());
         commandRegister.registerCommand("online", new OnlineCommand());
+        commandRegister.registerCommand("join", new JoinCommand());
+        commandRegister.registerCommand("msg", new MsgCommand());
+        commandRegister.registerCommand("exit", new ExitCommand());
     }
 
     public void start() {
