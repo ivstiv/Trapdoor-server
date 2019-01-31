@@ -46,7 +46,7 @@ public class RequestHandler extends AbstractHandler implements CommandSender {
                     if(message.startsWith("/")) {
                         // dispatch the command
                         String name = message.split(" ")[0].replaceAll("/", "");
-                        String[] args = message.substring(name.length()+1).split(" ");
+                        String[] args = message.substring(name.length()+2).split(" ");
                         server.dispatchCommand(this, name, args);
                     }else{
                         getActiveChannel().broadcastMsg(this, message); // forward the message
@@ -121,7 +121,6 @@ public class RequestHandler extends AbstractHandler implements CommandSender {
                     payload.addProperty("channel", activeChannel.getName());
                     Request statusBar = new Request(RequestType.ACTION, payload);
                     sendRequest(statusBar);
-                    // TODO: 18-Nov-18 send available commands when they get implemented :D
                     break;
             }
         }
