@@ -1,7 +1,7 @@
 package communication;
 
 public enum RequestType {
-    CONNECT, DISCONNECT, ACTION, RESPONSE, MSG, POISON_PILL
+    CONNECT, DISCONNECT, ACTION, RESPONSE, MSG, POISON_PILL, PRIVATE_MSG
 }
 
  /*

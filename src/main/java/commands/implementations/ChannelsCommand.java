@@ -1,7 +1,9 @@
-package commands;
+package commands.implementations;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import commands.CommandExecutor;
+import commands.CommandSender;
 import communication.AbstractHandler;
 import communication.Request;
 import communication.RequestHandler;
@@ -11,7 +13,7 @@ import core.ServiceLocator;
 import data.Channel;
 import data.DataLoader;
 
-public class ChannelsCommand implements CommandExecutor{
+public class ChannelsCommand implements CommandExecutor {
 
     @Override
     public void onCommand(CommandSender sender, String command, String[] args) {

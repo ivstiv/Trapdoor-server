@@ -11,6 +11,8 @@
   "already-in": "~1~a[Server]~r~fYou are already in this channel.",
   "join-server": "joined the server!",
   "left-server": "left the server!",
+  "offline": "is offline.",
+  "cant-msg": "~1~a[Server]~r~fYou can't send a message to yourself.",
   "bye": "~1~dBye, bye!",
   "prefix": "~1~a[Server]~g"
 }

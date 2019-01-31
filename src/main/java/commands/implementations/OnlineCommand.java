@@ -1,13 +1,15 @@
-package commands;
+package commands.implementations;
 
 import com.google.gson.JsonObject;
+import commands.CommandExecutor;
+import commands.CommandSender;
 import communication.Request;
 import communication.RequestHandler;
 import communication.RequestType;
 import core.ServerWrapper;
 import core.ServiceLocator;
 
-public class OnlineCommand implements CommandExecutor{
+public class OnlineCommand implements CommandExecutor {
     @Override
     public void onCommand(CommandSender sender, String command, String[] args) {
 

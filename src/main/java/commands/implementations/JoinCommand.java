@@ -1,6 +1,8 @@
-package commands;
+package commands.implementations;
 
 import com.google.gson.JsonObject;
+import commands.CommandExecutor;
+import commands.CommandSender;
 import communication.Request;
 import communication.RequestHandler;
 import communication.RequestType;
