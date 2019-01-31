@@ -70,7 +70,7 @@ public class RequestHandler extends AbstractHandler implements CommandSender {
                     String password = r.getContent().get("password").getAsString();
 
                     // check if the server is full
-                    if(server.connectedClients() >= Config.getInt("slots")) {
+                    if(server.getConnectedClients().size() >= Config.getInt("slots")) {
                         JsonObject payload = new JsonObject();
                         payload.addProperty("code", 203);
                         Request req = new Request(RequestType.RESPONSE, payload);

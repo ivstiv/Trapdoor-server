@@ -42,8 +42,8 @@ public class ServerWrapper {
 
     }
 
-    public int connectedClients() {
-        return connectedClients.size();
+    public Set<RequestHandler> getConnectedClients() {
+        return Collections.unmodifiableSet(connectedClients);
     }
 
     public void addConnectedClient(RequestHandler r) {

@@ -1,5 +1,5 @@
 {
-  "available-channels": "~1~dAvailable channels:",
+  "available-channels": "~1~dAvailable channels (name, type, online):",
   "help": "~1~dCommands:\n  ~g/help | Show this menu\n  /online | Show online users\n  /channels | Shows the available channels on the server\n  /join <channel> [password] | Join a different channel\n  /msg <user> | Send a private message\n  /exit | Exit the server",
   "not-implemented": "~1~a[Server]~r~fNot implemented.",
   "unknown-command": "~1~a[Server]~r~fUnknown command.",

@@ -24,7 +24,7 @@ public class ChannelsCommand implements CommandExecutor{
 
             StringBuilder channelsText = new StringBuilder(dl.getMessage("available-channels"));
             for(Channel ch : server.getChannels()) {
-                String entry = String.format("\n~g   - [%s] ~s ~d", ch.getName(), ch.getType().toString(), ch.getClients().size());
+                String entry = String.format("\n~g   - [%s] %s %d", ch.getName(), ch.getType().toString(), ch.getClients().size());
                 channelsText.append(entry);
             }
 

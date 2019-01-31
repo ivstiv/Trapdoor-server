@@ -13,14 +13,20 @@ public class OnlineCommand implements CommandExecutor{
 
         if (sender instanceof RequestHandler) {
 
+            ServerWrapper server = ServiceLocator.getService(ServerWrapper.class);
             RequestHandler client = (RequestHandler) sender;
 
-            int players = ServiceLocator.getService(ServerWrapper.class).connectedClients();
-            String msg = "~1~dOnline players ("+players+"):";
-            // TODO: 30-Jan-19 may be list all online players once /join channel works
+            int users = server.getConnectedClients().size();
+
+            StringBuilder usersText = new StringBuilder("~1~dOnline users ("+users+"):~g");
+            for(RequestHandler cl : server.getConnectedClients()) {
+                String entry = String.format("[%s] %s, ",
+                        cl.getActiveChannel().getName(), cl.getUsername());
+                usersText.append(entry);
+            }
             JsonObject payload = new JsonObject();
             payload.addProperty("action", "print");
-            payload.addProperty("message", msg);
+            payload.addProperty("message", usersText.toString());
             client.sendRequest(new Request(RequestType.ACTION, payload));
             // TODO: 30-Jan-19 add option for console sender later
         }
