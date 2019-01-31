@@ -46,7 +46,12 @@ public class RequestHandler extends AbstractHandler implements CommandSender {
                     if(message.startsWith("/")) {
                         // dispatch the command
                         String name = message.split(" ")[0].replaceAll("/", "");
-                        String[] args = message.substring(name.length()+2).split(" ");
+                        String[] args = null;
+                        if(message.length() > name.length()+1) {
+                            args = message.substring(name.length()+2).split(" ");
+                        }else{
+                            args = new String[0];
+                        }
                         server.dispatchCommand(this, name, args);
                     }else{
                         getActiveChannel().broadcastMsg(this, message); // forward the message
@@ -114,6 +119,9 @@ public class RequestHandler extends AbstractHandler implements CommandSender {
                     this.activeChannel = server.getChannel(ChannelType.DEFAULT);
                     activeChannel.addClient(this);
                     server.addConnectedClient(this);
+                    String msg = String.format("%s%s %s",
+                            dl.getMessage("prefix"), getUsername(), dl.getMessage("join-server"));
+                    server.getChannel(ChannelType.DEFAULT).broadcastPrint(msg);
 
                     // update status bar
                     payload = new JsonObject();

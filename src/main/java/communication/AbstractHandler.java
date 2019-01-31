@@ -4,7 +4,9 @@ import com.google.gson.JsonObject;
 import communication.security.AES;
 import communication.security.AES_OLD;
 import communication.security.RSA;
+import core.ServiceLocator;
 import data.Channel;
+import data.DataLoader;
 import exceptions.MalformedRequestException;
 
 import java.io.*;
@@ -27,12 +29,15 @@ public abstract class AbstractHandler extends Thread{
     protected String username;
     protected Channel activeChannel;
 
+    protected DataLoader dl = ServiceLocator.getService(DataLoader.class);
+
     public AbstractHandler(Socket client) {
         this.client = client;
     }
 
     public String getUsername() {return this.username;}
     public Channel getActiveChannel() {return  this.activeChannel;}
+    public void setActiveChannel(Channel newChannel) {this.activeChannel = newChannel;}
 
     protected void initialiseStreams() {
         try {
@@ -122,4 +127,11 @@ public abstract class AbstractHandler extends Thread{
         }
     }
 
+    public void sendServerMessage(String msg) {
+        JsonObject payload = new JsonObject();
+        payload.addProperty("action", "print");
+        payload.addProperty("message", msg);
+        Request response = new Request(RequestType.ACTION, payload);
+        sendRequest(response);
+    }
 }

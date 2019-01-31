@@ -1,9 +1,16 @@
 {
   "available-channels": "~1~dAvailable channels:",
-  "help": "~1~dCommands:\n  ~g/help | Show this menu\n  /online | Show online users\n  /channels | Shows the available channels on the server\n  /join <channel> | Join a different channel\n  /msg <user> | Send a private message\n  /exit | Exit the server",
-  "not-implemented": "~1~a[Server]~r~fNot implemented..",
-  "unknown-command": "~1~a[Server]~r~fUnknown command..",
+  "help": "~1~dCommands:\n  ~g/help | Show this menu\n  /online | Show online users\n  /channels | Shows the available channels on the server\n  /join <channel> [password] | Join a different channel\n  /msg <user> | Send a private message\n  /exit | Exit the server",
+  "not-implemented": "~1~a[Server]~r~fNot implemented.",
+  "unknown-command": "~1~a[Server]~r~fUnknown command.",
+  "missing-argument": "~1~a[Server]~r~fMissing argument, please check the list with commands and try again.",
+  "unknown-channel": "~1~a[Server]~r~fUnknown channel.",
+  "wrong-pass": "~1~a[Server]~r~fWrong password.",
+  "join-channel": "joined the channel!",
+  "left-channel": "left the channel!",
+  "already-in": "~1~a[Server]~r~fYou are already in this channel.",
+  "join-server": "joined the server!",
+  "left-server": "left the server!",
   "bye": "~1~dBye, bye!",
-  "left": " just left!",
   "prefix": "~1~a[Server]~g"
 }

@@ -25,6 +25,7 @@ public class ServerWrapper {
 
     public void dispatchCommand(CommandSender sender, String name, String[] args) {
         Command cmd = new Command(sender, name, args);
+
         if(!commandRegister.dispatch(cmd)) {  // return false if the command is not registered
             if(sender instanceof RequestHandler) {
 

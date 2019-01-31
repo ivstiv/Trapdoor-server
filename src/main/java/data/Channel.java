@@ -23,7 +23,6 @@ public class Channel {
 
     public void addClient(AbstractHandler client) {
         clients.add(client);
-        broadcastPrint("~1~a[Server]~g"+client.getUsername()+" has joined!");
     }
 
     public void removeClient(String username) {
