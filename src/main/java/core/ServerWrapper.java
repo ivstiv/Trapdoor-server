@@ -9,6 +9,7 @@ import communication.RequestHandler;
 import communication.RequestType;
 import data.Channel;
 import data.ChannelType;
+import data.DataLoader;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -24,15 +25,16 @@ public class ServerWrapper {
 
     public void dispatchCommand(CommandSender sender, String name, String[] args) {
         Command cmd = new Command(sender, name, args);
-        if(!commandRegister.dispatch(cmd)) {
-
+        if(!commandRegister.dispatch(cmd)) {  // return false if the command is not registered
             if(sender instanceof RequestHandler) {
 
                 RequestHandler client = (RequestHandler) sender;
+                DataLoader dl = ServiceLocator.getService(DataLoader.class);
 
                 JsonObject payload = new JsonObject();
-                payload.addProperty("code", 204); // command doesnt exist!
-                Request req = new Request(RequestType.RESPONSE, payload);
+                payload.addProperty("action", "print");
+                payload.addProperty("message", dl.getMessage("unknown-command"));
+                Request req = new Request(RequestType.ACTION, payload);
                 client.sendRequest(req);
             }
         }

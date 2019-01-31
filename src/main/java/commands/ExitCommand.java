@@ -26,6 +26,11 @@ public class ExitCommand implements CommandExecutor {
             Request response = new Request(RequestType.ACTION, payload);
             client.sendRequest(response);
 
+            JsonObject payload2 = new JsonObject();
+            payload2.addProperty("action", "reset_statusbar");
+            Request response2 = new Request(RequestType.ACTION, payload2);
+            client.sendRequest(response2);
+
             // broadcast that the client has disconnected
             client.getActiveChannel().broadcastPrint(dl.getMessage("prefix")+client.getUsername()+dl.getMessage("left"));
 
