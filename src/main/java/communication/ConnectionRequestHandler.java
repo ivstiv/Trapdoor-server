@@ -54,7 +54,7 @@ public class ConnectionRequestHandler extends ConnectionHandler implements Comma
                         }
                         server.dispatchCommand(this, name, args);
                     }else{
-                        getActiveChannel().broadcastMsg(this, message); // forward the message
+                        clientData.getActiveChannel().broadcastMsg(this, message); // forward the message
                     }
                     break;
                 case ACTION:
@@ -115,18 +115,18 @@ public class ConnectionRequestHandler extends ConnectionHandler implements Comma
                     sendRequest(motd);
 
                     // setup the user's channel
-                    this.username = username;
-                    this.activeChannel = server.getChannel(ChannelType.DEFAULT);
-                    activeChannel.addClient(this);
+                    clientData.setUsername(username);
+                    clientData.setActiveChannel(server.getChannel(ChannelType.DEFAULT));
+                    clientData.getActiveChannel().addClient(this);
                     server.addConnectedClient(this);
                     String msg = String.format("%s%s %s",
-                            dl.getMessage("prefix"), getUsername(), dl.getMessage("join-server"));
+                            dl.getMessage("prefix"), clientData.getUsername(), dl.getMessage("join-server"));
                     server.getChannel(ChannelType.DEFAULT).broadcastPrint(msg);
 
                     // update status bar
                     payload = new JsonObject();
                     payload.addProperty("action", "update_statusbar");
-                    payload.addProperty("channel", activeChannel.getName());
+                    payload.addProperty("channel", clientData.getActiveChannel().getName());
                     Request statusBar = new Request(RequestType.ACTION, payload);
                     sendRequest(statusBar);
                     break;

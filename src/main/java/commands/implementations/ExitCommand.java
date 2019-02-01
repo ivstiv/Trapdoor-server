@@ -35,8 +35,8 @@ public class ExitCommand implements CommandExecutor {
 
             // broadcast that the client has disconnected
             String msg = String.format("%s%s %s",
-                    dl.getMessage("prefix"), client.getUsername(), dl.getMessage("left-server"));
-            client.getActiveChannel().broadcastPrint(msg);
+                    dl.getMessage("prefix"), client.getClientData().getUsername(), dl.getMessage("left-server"));
+            client.getClientData().getActiveChannel().broadcastPrint(msg);
 
             // remove the client and shut down the thread and the socket streams
             client.stopConnection();

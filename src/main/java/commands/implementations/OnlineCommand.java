@@ -23,7 +23,7 @@ public class OnlineCommand implements CommandExecutor {
             StringBuilder usersText = new StringBuilder("~1~dOnline users ("+users+"):~g");
             for(ConnectionRequestHandler cl : server.getConnectedClients()) {
                 String entry = String.format("[%s] %s, ",
-                        cl.getActiveChannel().getName(), cl.getUsername());
+                        cl.getClientData().getActiveChannel().getName(), cl.getClientData().getUsername());
                 usersText.append(entry);
             }
             JsonObject payload = new JsonObject();

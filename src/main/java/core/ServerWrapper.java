@@ -51,12 +51,12 @@ public class ServerWrapper {
     }
     public void removeConnectedClient(ConnectionRequestHandler r) {
         connectedClients.remove(r);
-        if(r.getActiveChannel() != null)
-            r.getActiveChannel().removeClient(r.getUsername());
+        if(r.getClientData().getActiveChannel() != null)
+            r.getClientData().getActiveChannel().removeClient(r.getClientData().getUsername());
     }
 
     public boolean isUserOnline(String username) {
-        Predicate<ConnectionRequestHandler> filter = handler -> handler.getUsername().equals(username);
+        Predicate<ConnectionRequestHandler> filter = handler -> handler.getClientData().getUsername().equals(username);
         return connectedClients.stream().anyMatch(filter);
     }
 
@@ -80,7 +80,7 @@ public class ServerWrapper {
         return null;
     }
 
-    public void load() {
+    private void load() {
         // load channels from config
         JsonArray arr = Config.getJsonArray("channels");
         if(arr.size() == 0) {
@@ -106,7 +106,8 @@ public class ServerWrapper {
         commandRegister.registerCommand("exit", new ExitCommand());
         commandRegister.registerCommand("r", new RespondCommand());
         commandRegister.registerCommand("clear", new ClearCommand());
-
+        commandRegister.registerCommand("block", new BlockCommand());
+        commandRegister.registerCommand("unblock", new UnblockCommand());
     }
 
     public void start() {

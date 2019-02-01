@@ -31,7 +31,7 @@ public class MsgCommand implements CommandExecutor {
             }
 
             //check if the user tries to send it to himself
-            if(client.getUsername().equals(args[0])) {
+            if(client.getClientData().getUsername().equals(args[0])) {
                 client.sendServerMessage(dl.getMessage("cant-msg"));
                 return;
             }
@@ -39,30 +39,37 @@ public class MsgCommand implements CommandExecutor {
             // check if receiver is online
             if(server.isUserOnline(args[0])) {
 
-                // put together the message
-                StringBuilder msg = new StringBuilder();
-                for(int i = 1; i < args.length; i++) {
-                    msg.append(args[i]).append(" ");
-                }
-
-                // send the message to the receiver
-                JsonObject payload = new JsonObject();
-                payload.addProperty("sender", client.getUsername());
-                payload.addProperty("receiver", args[0]);
-                payload.addProperty("message", msg.toString());
-                Request req = new Request(RequestType.PRIVATE_MSG, payload);
-
                 ConnectionRequestHandler receiver = server.getConnectedClients()
                         .stream()
-                        .filter(cl -> cl.getUsername().equals(args[0]))
+                        .filter(cl -> cl.getClientData().getUsername().equals(args[0]))
                         .findFirst()
                         .get();
 
-                receiver.sendRequest(req);
-                receiver.setLastPrivateSenderUsername(client.getUsername()); // setup the name for the /r command
+                // check if receiver has blocked the sender
+                if(receiver.getClientData().getBlockedUsernames().contains(client.getClientData().getUsername())) {
+                    // notify the sender that he can't send messages to the receiver
+                    client.sendServerMessage(dl.getMessage("cant-send"));
 
-                // echo the message to the sender
-                client.sendRequest(req);
+                }else{
+                    // put together the message
+                    StringBuilder msg = new StringBuilder();
+                    for(int i = 1; i < args.length; i++) {
+                        msg.append(args[i]).append(" ");
+                    }
+
+                    // send the message to the receiver
+                    JsonObject payload = new JsonObject();
+                    payload.addProperty("sender", client.getClientData().getUsername());
+                    payload.addProperty("receiver", args[0]);
+                    payload.addProperty("message", msg.toString());
+                    Request req = new Request(RequestType.PRIVATE_MSG, payload);
+
+                    receiver.sendRequest(req);
+                    receiver.getClientData().setLastPrivateSenderUsername(client.getClientData().getUsername()); // setup the name for the /r command
+
+                    // echo the message to the sender
+                    client.sendRequest(req);
+                }
             }else{
                 String msg = String.format("%s%s %s",
                         dl.getMessage("prefix"), args[0], dl.getMessage("offline"));

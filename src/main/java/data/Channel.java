@@ -27,7 +27,7 @@ public class Channel {
 
     public void removeClient(String username) {
         for(ConnectionHandler client : clients) {
-            if(client.getUsername().equals(username)) {
+            if(client.getClientData().getUsername().equals(username)) {
                 clients.remove(client);
                 return;
             }
@@ -37,12 +37,15 @@ public class Channel {
 
     public void broadcastMsg(ConnectionHandler client, String message) {
         JsonObject content = new JsonObject();
-        content.addProperty("sender", client.getUsername());
+        content.addProperty("sender", client.getClientData().getUsername());
         content.addProperty("message", message);
         Request req = new Request(RequestType.MSG, content);
+
+        String senderUsername = client.getClientData().getUsername();
         for(ConnectionHandler c : clients) {
-            if(!c.equals(client)) // send to everyone except to him
-                c.sendRequest(req);
+            if(!c.getClientData().getBlockedUsernames().contains(senderUsername)) // send if the sender is not blocked
+                if(!c.equals(client)) // send to everyone except to him
+                    c.sendRequest(req);
         }
     }
 

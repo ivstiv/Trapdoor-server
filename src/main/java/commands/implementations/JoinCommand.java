@@ -63,7 +63,7 @@ public class JoinCommand implements CommandExecutor {
 
     // when we have multiple command senders just overload the method
     private void switchChannel(ConnectionRequestHandler client, Channel newChannel) {
-        Channel oldChannel = client.getActiveChannel();
+        Channel oldChannel = client.getClientData().getActiveChannel();
 
         // check if the user is not already in this channel
         if(oldChannel.getName().equals(newChannel.getName())) {
@@ -72,9 +72,9 @@ public class JoinCommand implements CommandExecutor {
         }
 
         // switch the channel
-        oldChannel.removeClient(client.getUsername());
+        oldChannel.removeClient(client.getClientData().getUsername());
         newChannel.addClient(client);
-        client.setActiveChannel(newChannel);
+        client.getClientData().setActiveChannel(newChannel);
 
         // update the status bar
         JsonObject payload = new JsonObject();
@@ -85,12 +85,12 @@ public class JoinCommand implements CommandExecutor {
 
         // broadcast to everyone in the old channel
         String msg = String.format("%s%s %s",
-                dl.getMessage("prefix"), client.getUsername(), dl.getMessage("left-channel"));
+                dl.getMessage("prefix"), client.getClientData().getUsername(), dl.getMessage("left-channel"));
         oldChannel.broadcastPrint(msg);
 
         //broadcast to everyone in the new channel
         msg = String.format("%s%s %s",
-                dl.getMessage("prefix"), client.getUsername(), dl.getMessage("join-channel"));
+                dl.getMessage("prefix"), client.getClientData().getUsername(), dl.getMessage("join-channel"));
         newChannel.broadcastPrint(msg);
 
     }

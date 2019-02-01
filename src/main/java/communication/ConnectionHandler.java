@@ -2,10 +2,9 @@ package communication;
 
 import com.google.gson.JsonObject;
 import communication.security.AES;
-import communication.security.AES_OLD;
 import communication.security.RSA;
 import core.ServiceLocator;
-import data.Channel;
+import data.ConnectionData;
 import data.DataLoader;
 import exceptions.MalformedRequestException;
 
@@ -26,9 +25,7 @@ public abstract class ConnectionHandler extends Thread{
     private AES aes;
 
     //User data
-    protected String username;
-    protected Channel activeChannel;
-    private String lastPrivateSenderUsername = "";
+    protected ConnectionData clientData = new ConnectionData();
 
     protected DataLoader dl = ServiceLocator.getService(DataLoader.class);
 
@@ -36,9 +33,9 @@ public abstract class ConnectionHandler extends Thread{
         this.client = client;
     }
 
-    public String getUsername() {return this.username;}
-    public Channel getActiveChannel() {return  this.activeChannel;}
-    public void setActiveChannel(Channel newChannel) {this.activeChannel = newChannel;}
+    public ConnectionData getClientData() {
+        return this.clientData;
+    }
 
     protected void initialiseStreams() {
         try {
@@ -134,13 +131,5 @@ public abstract class ConnectionHandler extends Thread{
         payload.addProperty("message", msg);
         Request response = new Request(RequestType.ACTION, payload);
         sendRequest(response);
-    }
-
-    public void setLastPrivateSenderUsername(String username) {
-        this.lastPrivateSenderUsername = username;
-    }
-
-    public String getLastPrivateSenderUsername() {
-        return this.lastPrivateSenderUsername;
     }
 }
