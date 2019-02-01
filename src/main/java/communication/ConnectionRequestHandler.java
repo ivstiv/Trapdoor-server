@@ -11,9 +11,9 @@ import exceptions.MalformedRequestException;
 
 import java.net.Socket;
 
-public class RequestHandler extends AbstractHandler implements CommandSender {
+public class ConnectionRequestHandler extends ConnectionHandler implements CommandSender {
 
-    public RequestHandler(Socket client) {
+    public ConnectionRequestHandler(Socket client) {
         super(client);
     }
 

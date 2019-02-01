@@ -4,13 +4,11 @@ import com.google.gson.JsonObject;
 import commands.CommandExecutor;
 import commands.CommandSender;
 import communication.Request;
-import communication.RequestHandler;
+import communication.ConnectionRequestHandler;
 import communication.RequestType;
 import core.ServerWrapper;
 import core.ServiceLocator;
 import data.DataLoader;
-
-import java.util.Optional;
 
 public class MsgCommand implements CommandExecutor {
 
@@ -19,12 +17,12 @@ public class MsgCommand implements CommandExecutor {
     @Override
     public void onCommand(CommandSender sender, String command, String[] args) {
 
-        if (sender instanceof RequestHandler) {
+        if (sender instanceof ConnectionRequestHandler) {
 
             ServerWrapper server = ServiceLocator.getService(ServerWrapper.class);
             DataLoader dl = ServiceLocator.getService(DataLoader.class);
 
-            RequestHandler client = (RequestHandler) sender;
+            ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
 
             // check if arguments exists
             if(args.length < 2) {
@@ -44,7 +42,7 @@ public class MsgCommand implements CommandExecutor {
                 // put together the message
                 StringBuilder msg = new StringBuilder();
                 for(int i = 1; i < args.length; i++) {
-                    msg.append(args[i]+" ");
+                    msg.append(args[i]).append(" ");
                 }
 
                 // send the message to the receiver
@@ -54,12 +52,14 @@ public class MsgCommand implements CommandExecutor {
                 payload.addProperty("message", msg.toString());
                 Request req = new Request(RequestType.PRIVATE_MSG, payload);
 
-                server.getConnectedClients()
+                ConnectionRequestHandler receiver = server.getConnectedClients()
                         .stream()
                         .filter(cl -> cl.getUsername().equals(args[0]))
                         .findFirst()
-                        .get()
-                        .sendRequest(req);
+                        .get();
+
+                receiver.sendRequest(req);
+                receiver.setLastPrivateSenderUsername(client.getUsername()); // setup the name for the /r command
 
                 // echo the message to the sender
                 client.sendRequest(req);

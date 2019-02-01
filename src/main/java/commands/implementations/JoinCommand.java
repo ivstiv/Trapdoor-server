@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import commands.CommandExecutor;
 import commands.CommandSender;
 import communication.Request;
-import communication.RequestHandler;
+import communication.ConnectionRequestHandler;
 import communication.RequestType;
 import core.ServerWrapper;
 import core.ServiceLocator;
@@ -20,8 +20,8 @@ public class JoinCommand implements CommandExecutor {
     @Override
     public void onCommand(CommandSender sender, String command, String[] args) {
 
-        if(sender instanceof RequestHandler) {
-            RequestHandler client = (RequestHandler) sender;
+        if(sender instanceof ConnectionRequestHandler) {
+            ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
 
             // check if argument exists
             if(args.length < 1) {
@@ -62,7 +62,7 @@ public class JoinCommand implements CommandExecutor {
     }
 
     // when we have multiple command senders just overload the method
-    private void switchChannel(RequestHandler client, Channel newChannel) {
+    private void switchChannel(ConnectionRequestHandler client, Channel newChannel) {
         Channel oldChannel = client.getActiveChannel();
 
         // check if the user is not already in this channel

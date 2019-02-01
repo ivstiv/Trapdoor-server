@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import commands.CommandExecutor;
 import commands.CommandSender;
 import communication.Request;
-import communication.RequestHandler;
+import communication.ConnectionRequestHandler;
 import communication.RequestType;
 import core.ServerWrapper;
 import core.ServiceLocator;
@@ -13,15 +13,15 @@ public class OnlineCommand implements CommandExecutor {
     @Override
     public void onCommand(CommandSender sender, String command, String[] args) {
 
-        if (sender instanceof RequestHandler) {
+        if (sender instanceof ConnectionRequestHandler) {
 
             ServerWrapper server = ServiceLocator.getService(ServerWrapper.class);
-            RequestHandler client = (RequestHandler) sender;
+            ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
 
             int users = server.getConnectedClients().size();
 
             StringBuilder usersText = new StringBuilder("~1~dOnline users ("+users+"):~g");
-            for(RequestHandler cl : server.getConnectedClients()) {
+            for(ConnectionRequestHandler cl : server.getConnectedClients()) {
                 String entry = String.format("[%s] %s, ",
                         cl.getActiveChannel().getName(), cl.getUsername());
                 usersText.append(entry);

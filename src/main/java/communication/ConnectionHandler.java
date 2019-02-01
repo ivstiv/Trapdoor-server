@@ -15,7 +15,7 @@ import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 
-public abstract class AbstractHandler extends Thread{
+public abstract class ConnectionHandler extends Thread{
 
     // Communication objects
     private Socket client;
@@ -28,10 +28,11 @@ public abstract class AbstractHandler extends Thread{
     //User data
     protected String username;
     protected Channel activeChannel;
+    private String lastPrivateSenderUsername = "";
 
     protected DataLoader dl = ServiceLocator.getService(DataLoader.class);
 
-    public AbstractHandler(Socket client) {
+    public ConnectionHandler(Socket client) {
         this.client = client;
     }
 
@@ -133,5 +134,13 @@ public abstract class AbstractHandler extends Thread{
         payload.addProperty("message", msg);
         Request response = new Request(RequestType.ACTION, payload);
         sendRequest(response);
+    }
+
+    public void setLastPrivateSenderUsername(String username) {
+        this.lastPrivateSenderUsername = username;
+    }
+
+    public String getLastPrivateSenderUsername() {
+        return this.lastPrivateSenderUsername;
     }
 }

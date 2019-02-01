@@ -1,12 +1,10 @@
 package commands.implementations;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import commands.CommandExecutor;
 import commands.CommandSender;
-import communication.AbstractHandler;
 import communication.Request;
-import communication.RequestHandler;
+import communication.ConnectionRequestHandler;
 import communication.RequestType;
 import core.ServerWrapper;
 import core.ServiceLocator;
@@ -18,11 +16,11 @@ public class ChannelsCommand implements CommandExecutor {
     @Override
     public void onCommand(CommandSender sender, String command, String[] args) {
 
-        if(sender instanceof RequestHandler) {
+        if(sender instanceof ConnectionRequestHandler) {
 
             ServerWrapper server = ServiceLocator.getService(ServerWrapper.class);
             DataLoader dl = ServiceLocator.getService(DataLoader.class);
-            RequestHandler client = (RequestHandler) sender;
+            ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
 
             StringBuilder channelsText = new StringBuilder(dl.getMessage("available-channels"));
             for(Channel ch : server.getChannels()) {

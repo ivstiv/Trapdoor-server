@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import commands.*;
 import commands.implementations.*;
 import communication.Request;
-import communication.RequestHandler;
+import communication.ConnectionRequestHandler;
 import communication.RequestType;
 import data.Channel;
 import data.ChannelType;
@@ -20,16 +20,16 @@ import java.util.function.Predicate;
 public class ServerWrapper {
 
     private List<Channel> channels = new ArrayList<>();
-    private Set<RequestHandler> connectedClients = new HashSet<>();
+    private Set<ConnectionRequestHandler> connectedClients = new HashSet<>();
     private CommandRegister commandRegister = new CommandRegister();
 
     public void dispatchCommand(CommandSender sender, String name, String[] args) {
         Command cmd = new Command(sender, name, args);
 
         if(!commandRegister.dispatch(cmd)) {  // return false if the command is not registered
-            if(sender instanceof RequestHandler) {
+            if(sender instanceof ConnectionRequestHandler) {
 
-                RequestHandler client = (RequestHandler) sender;
+                ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
                 DataLoader dl = ServiceLocator.getService(DataLoader.class);
 
                 JsonObject payload = new JsonObject();
@@ -42,21 +42,21 @@ public class ServerWrapper {
 
     }
 
-    public Set<RequestHandler> getConnectedClients() {
+    public Set<ConnectionRequestHandler> getConnectedClients() {
         return Collections.unmodifiableSet(connectedClients);
     }
 
-    public void addConnectedClient(RequestHandler r) {
+    public void addConnectedClient(ConnectionRequestHandler r) {
         connectedClients.add(r);
     }
-    public void removeConnectedClient(RequestHandler r) {
+    public void removeConnectedClient(ConnectionRequestHandler r) {
         connectedClients.remove(r);
         if(r.getActiveChannel() != null)
             r.getActiveChannel().removeClient(r.getUsername());
     }
 
     public boolean isUserOnline(String username) {
-        Predicate<RequestHandler> filter = handler -> handler.getUsername().equals(username);
+        Predicate<ConnectionRequestHandler> filter = handler -> handler.getUsername().equals(username);
         return connectedClients.stream().anyMatch(filter);
     }
 
@@ -104,6 +104,9 @@ public class ServerWrapper {
         commandRegister.registerCommand("join", new JoinCommand());
         commandRegister.registerCommand("msg", new MsgCommand());
         commandRegister.registerCommand("exit", new ExitCommand());
+        commandRegister.registerCommand("r", new RespondCommand());
+        commandRegister.registerCommand("clear", new ClearCommand());
+
     }
 
     public void start() {
@@ -117,7 +120,7 @@ public class ServerWrapper {
 
                     System.out.printf("Request receiver running at port %d . . .\n", Config.getInt("port"));
                     Socket socket;
-                    RequestHandler client;
+                    ConnectionRequestHandler client;
                     while (true) {
                         try {
                             socket = ss.accept();
@@ -125,7 +128,7 @@ public class ServerWrapper {
                             e.printStackTrace();
                             break;
                         }
-                        client = new RequestHandler(socket);
+                        client = new ConnectionRequestHandler(socket);
                         client.start();
                     }
                 }catch (Exception e) {
