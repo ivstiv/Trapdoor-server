@@ -1,6 +1,6 @@
 package communication.security;
 
-import core.Config;
+import data.Config;
 
 import javax.crypto.Cipher;
 import java.security.*;

@@ -3,7 +3,7 @@ package communication;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import commands.CommandSender;
-import core.Config;
+import data.Config;
 import core.ServerWrapper;
 import core.ServiceLocator;
 import data.ChannelType;

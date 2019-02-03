@@ -6,7 +6,9 @@ import commands.CommandSender;
 import communication.Request;
 import communication.ConnectionRequestHandler;
 import communication.RequestType;
+import core.Console;
 import core.ServiceLocator;
+import data.ANSI;
 import data.DataLoader;
 
 public class HelpCommand implements CommandExecutor {
@@ -23,6 +25,13 @@ public class HelpCommand implements CommandExecutor {
             payload.addProperty("message", dl.getMessage("help"));
             Request response = new Request(RequestType.ACTION, payload);
             client.sendRequest(response);
+            return;
+
+        }else if(sender instanceof Console) {
+
+            Console console = (Console) sender;
+            console.print(ANSI.GREEN+"HELP COMMAND");
+
         }
     }
 }

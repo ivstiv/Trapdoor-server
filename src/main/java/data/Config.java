@@ -1,4 +1,4 @@
-package core;
+package data;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -9,7 +9,6 @@ import java.io.*;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class Config {
 

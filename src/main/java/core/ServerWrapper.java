@@ -10,6 +10,7 @@ import communication.ConnectionRequestHandler;
 import communication.RequestType;
 import data.Channel;
 import data.ChannelType;
+import data.Config;
 import data.DataLoader;
 
 import java.net.ServerSocket;
@@ -22,6 +23,7 @@ public class ServerWrapper {
     private List<Channel> channels = new ArrayList<>();
     private Set<ConnectionRequestHandler> connectedClients = new HashSet<>();
     private CommandRegister commandRegister = new CommandRegister();
+    private Console console = new Console(this);
 
     public void dispatchCommand(CommandSender sender, String name, String[] args) {
         Command cmd = new Command(sender, name, args);
@@ -108,6 +110,19 @@ public class ServerWrapper {
         commandRegister.registerCommand("clear", new ClearCommand());
         commandRegister.registerCommand("block", new BlockCommand());
         commandRegister.registerCommand("unblock", new UnblockCommand());
+
+        console.start();
+
+        for(int i = 0; i < 30; i++) {
+
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            console.print("Test");
+        }
+
     }
 
     public void start() {
@@ -119,7 +134,7 @@ public class ServerWrapper {
                 try {
                     ServerSocket ss = new ServerSocket(Config.getInt("port"));    // opening the socket
 
-                    System.out.printf("Request receiver running at port %d . . .\n", Config.getInt("port"));
+                    console.print("Request receiver running at port %d"+Config.getInt("port"));
                     Socket socket;
                     ConnectionRequestHandler client;
                     while (true) {
