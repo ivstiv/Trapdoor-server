@@ -2,19 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9695c3d5-9ebd-48c5-bb12-2df6c4af58da" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/Trapdoor-server.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/commandsinfo.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/commands/implementations/StopCommand.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/commands/implementations/BlockCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/commands/implementations/BlockCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/commands/implementations/ChannelsCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/commands/implementations/ChannelsCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/commands/implementations/ClearCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/commands/implementations/ClearCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/commands/implementations/ExitCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/commands/implementations/ExitCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/commands/implementations/JoinCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/commands/implementations/JoinCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/commands/implementations/MsgCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/commands/implementations/MsgCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/commands/implementations/OnlineCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/commands/implementations/OnlineCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/commands/implementations/RespondCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/commands/implementations/RespondCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/commands/implementations/UnblockCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/commands/implementations/UnblockCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/messages.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/messages.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/commands/CommandRegister.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/commands/CommandRegister.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/core/Console.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/core/Console.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/core/ServerWrapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/core/ServerWrapper.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -38,31 +30,31 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/commands/implementations/HelpCommand.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="214">
-              <caret line="32" column="39" selection-start-line="32" selection-start-column="39" selection-end-line="32" selection-end-column="39" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/commands/implementations/JoinCommand.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="394">
-              <caret line="65" column="9" selection-start-line="65" selection-start-column="9" selection-end-line="65" selection-end-column="9" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/core/ServerWrapper.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="307">
+              <caret line="185" column="30" lean-forward="true" selection-start-line="185" selection-start-column="30" selection-end-line="185" selection-end-column="30" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/core/Console.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="227">
+              <caret line="127" column="24" selection-start-line="127" selection-start-column="24" selection-end-line="127" selection-end-column="24" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/resources/messages.json">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="397">
@@ -72,22 +64,22 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/resources/commandsinfo.txt">
+        <entry file="file://$PROJECT_DIR$/src/main/java/commands/implementations/StopCommand.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="300">
-              <caret line="33" column="79" lean-forward="true" selection-start-line="33" selection-start-column="54" selection-end-line="33" selection-end-column="79" />
+            <state relative-caret-position="267">
+              <caret line="14" column="32" selection-start-line="14" selection-start-column="32" selection-end-line="14" selection-end-column="32" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/commands/implementations/MsgCommand.java">
+        <entry file="file://$PROJECT_DIR$/src/main/resources/commandsinfo.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="274">
-              <caret line="85" column="9" lean-forward="true" selection-start-line="83" selection-start-column="8" selection-end-line="85" selection-end-column="9" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
+            <state relative-caret-position="300">
+              <caret line="33" column="79" selection-start-line="33" selection-start-column="54" selection-end-line="33" selection-end-column="79" />
             </state>
           </provider>
         </entry>
@@ -95,44 +87,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/commands/implementations/RespondCommand.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="294">
-              <caret line="90" column="9" lean-forward="true" selection-start-line="88" selection-start-column="8" selection-end-line="90" selection-end-column="9" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/commands/implementations/UnblockCommand.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-406">
-              <caret line="16" column="70" selection-start-line="16" selection-start-column="70" selection-end-line="16" selection-end-column="70" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/commands/implementations/BlockCommand.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="354">
-              <caret line="59" column="9" lean-forward="true" selection-start-line="57" selection-start-column="8" selection-end-line="59" selection-end-column="9" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/commands/implementations/ExitCommand.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="374">
-              <caret line="47" column="9" lean-forward="true" selection-start-line="45" selection-start-column="8" selection-end-line="47" selection-end-column="9" />
+            <state relative-caret-position="314">
+              <caret line="19" column="78" selection-start-line="19" selection-start-column="8" selection-end-line="19" selection-end-column="78" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -146,8 +102,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Interface" />
-        <option value="Class" />
         <option value="Enum" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -165,7 +121,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/src/main/java/exceptions/MalformedRequestException.java" />
         <option value="$PROJECT_DIR$/src/main/java/data/Request.java" />
         <option value="$PROJECT_DIR$/src/main/java/data/User.java" />
@@ -196,13 +151,10 @@
         <option value="$PROJECT_DIR$/src/main/java/data/Channel.java" />
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/src/main/java/data/ANSI.java" />
-        <option value="$PROJECT_DIR$/src/main/java/commands/CommandRegister.java" />
         <option value="$PROJECT_DIR$/src/main/resources/config.json" />
-        <option value="$PROJECT_DIR$/src/main/java/core/Console.java" />
         <option value="$PROJECT_DIR$/src/main/java/core/Main.java" />
         <option value="$PROJECT_DIR$/config.json" />
         <option value="$PROJECT_DIR$/src/main/java/commands/implementations/HelpCommand.java" />
-        <option value="$PROJECT_DIR$/src/main/java/core/ServerWrapper.java" />
         <option value="$PROJECT_DIR$/src/main/java/communication/ConnectionHandler.java" />
         <option value="$PROJECT_DIR$/src/main/java/communication/ConnectionRequestHandler.java" />
         <option value="$PROJECT_DIR$/src/main/java/commands/implementations/ChannelsCommand.java" />
@@ -216,6 +168,10 @@
         <option value="$PROJECT_DIR$/src/main/java/commands/implementations/UnblockCommand.java" />
         <option value="$PROJECT_DIR$/src/main/java/commands/implementations/OnlineCommand.java" />
         <option value="$PROJECT_DIR$/src/main/resources/messages.json" />
+        <option value="$PROJECT_DIR$/src/main/java/commands/implementations/Stop.java" />
+        <option value="$PROJECT_DIR$/src/main/java/commands/CommandRegister.java" />
+        <option value="$PROJECT_DIR$/src/main/java/core/ServerWrapper.java" />
+        <option value="$PROJECT_DIR$/src/main/java/core/Console.java" />
       </list>
     </option>
   </component>
@@ -356,7 +312,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="SearchEverywhereHistoryKey" value="&#9;FILE&#9;file://E:/Programming/Java Programming/IntelliJ Projects/Trapdoor-server/src/main/java/communication/RequestHandler.java" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1549195671566" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1549198825815" />
   </component>
   <component name="RecentsManager">
     <key name="CopyClassDialog.RECENTS_KEY">
@@ -432,7 +388,7 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32624114" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="7" visible="true" weight="0.28895184" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="7" visible="true" weight="0.29886687" />
       <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="9" />
       <window_info anchor="bottom" id="Messages" order="10" weight="0.32907802" />
@@ -545,13 +501,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/commands/CommandExecutor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="80">
-          <caret line="4" column="72" selection-start-line="4" selection-start-column="72" selection-end-line="4" selection-end-column="72" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/commands/Command.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="160">
@@ -566,13 +515,6 @@
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/commands/CommandSender.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="40">
-          <caret line="2" column="32" lean-forward="true" selection-start-line="2" selection-start-column="32" selection-end-line="2" selection-end-column="32" />
         </state>
       </provider>
     </entry>
@@ -597,16 +539,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/commands/CommandRegister.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="38" column="42" lean-forward="true" selection-start-line="38" selection-start-column="42" selection-end-line="38" selection-end-column="42" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/resources/config.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="273">
@@ -621,38 +553,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/core/Console.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="473">
-          <caret line="67" column="49" selection-start-line="67" selection-start-column="49" selection-end-line="67" selection-end-column="49" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#707#708#0" expanded="true" />
-            <element signature="e#743#744#0" expanded="true" />
-            <element signature="e#3146#3147#0" expanded="true" />
-            <element signature="e#3173#3174#0" expanded="true" />
-            <element signature="e#3213#3214#0" expanded="true" />
-            <element signature="e#3245#3246#0" expanded="true" />
-            <element signature="e#3225#3226#0" expanded="true" />
-            <element signature="e#3284#3285#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/core/Main.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="140">
           <caret line="7" column="49" selection-start-line="7" selection-start-column="49" selection-end-line="7" selection-end-column="49" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/core/ServerWrapper.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="260">
-          <caret line="31" column="23" selection-start-line="31" selection-start-column="23" selection-end-line="31" selection-end-column="23" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -703,7 +607,7 @@
     <entry file="file://$PROJECT_DIR$/src/main/java/commands/implementations/BlockCommand.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="354">
-          <caret line="59" column="9" lean-forward="true" selection-start-line="57" selection-start-column="8" selection-end-line="59" selection-end-column="9" />
+          <caret line="59" column="9" selection-start-line="57" selection-start-column="8" selection-end-line="59" selection-end-column="9" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -713,7 +617,7 @@
     <entry file="file://$PROJECT_DIR$/src/main/java/commands/implementations/ExitCommand.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="374">
-          <caret line="47" column="9" lean-forward="true" selection-start-line="45" selection-start-column="8" selection-end-line="47" selection-end-column="9" />
+          <caret line="47" column="9" selection-start-line="45" selection-start-column="8" selection-end-line="47" selection-end-column="9" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -743,17 +647,7 @@
     <entry file="file://$PROJECT_DIR$/src/main/java/commands/implementations/MsgCommand.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="274">
-          <caret line="85" column="9" lean-forward="true" selection-start-line="83" selection-start-column="8" selection-end-line="85" selection-end-column="9" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/commands/implementations/RespondCommand.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="294">
-          <caret line="90" column="9" lean-forward="true" selection-start-line="88" selection-start-column="8" selection-end-line="90" selection-end-column="9" />
+          <caret line="85" column="9" selection-start-line="83" selection-start-column="8" selection-end-line="85" selection-end-column="9" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -780,10 +674,56 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/commands/implementations/StopCommand.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="267">
+          <caret line="14" column="32" selection-start-line="14" selection-start-column="32" selection-end-line="14" selection-end-column="32" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/commands/CommandSender.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="40">
+          <caret line="2" column="32" selection-start-line="2" selection-start-column="32" selection-end-line="2" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/commands/CommandRegister.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="247">
+          <caret line="58" column="13" selection-start-line="58" selection-start-column="13" selection-end-line="58" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#1847#1848#0" expanded="true" />
+            <element signature="e#1878#1879#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/commands/CommandExecutor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="80">
+          <caret line="4" column="72" selection-start-line="4" selection-start-column="72" selection-end-line="4" selection-end-column="72" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/commands/implementations/RespondCommand.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="314">
+          <caret line="19" column="78" selection-start-line="19" selection-start-column="8" selection-end-line="19" selection-end-column="78" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/resources/commandsinfo.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="300">
-          <caret line="33" column="79" lean-forward="true" selection-start-line="33" selection-start-column="54" selection-end-line="33" selection-end-column="79" />
+          <caret line="33" column="79" selection-start-line="33" selection-start-column="54" selection-end-line="33" selection-end-column="79" />
         </state>
       </provider>
     </entry>
@@ -791,6 +731,26 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="397">
           <caret line="29" column="297" selection-start-line="29" selection-start-column="297" selection-end-line="29" selection-end-column="297" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/core/Console.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="227">
+          <caret line="127" column="24" selection-start-line="127" selection-start-column="24" selection-end-line="127" selection-end-column="24" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/core/ServerWrapper.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="307">
+          <caret line="185" column="30" lean-forward="true" selection-start-line="185" selection-start-column="30" selection-end-line="185" selection-end-column="30" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

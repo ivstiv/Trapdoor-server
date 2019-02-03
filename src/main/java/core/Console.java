@@ -6,6 +6,7 @@ import data.DataLoader;
 import org.jline.reader.*;
 import org.jline.utils.AttributedString;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -21,6 +22,8 @@ public class Console extends Thread implements CommandSender {
     private String[] array = {"default", "traffic", "debug", "commands-only"};
     private List<String> availableModes = Arrays.asList(array);
 
+    private volatile boolean running = true;
+
 
     public Console(ServerWrapper server) {
         this.server = server;
@@ -31,7 +34,7 @@ public class Console extends Thread implements CommandSender {
         DataLoader dl = ServiceLocator.getService(DataLoader.class);
 
         String prompt = ANSI.GREEN+"["+getMode()+"] >>";
-        while (true) {
+        while (running) {
             String cmd = null;
             try {
                 cmd = reader.readLine(prompt);
@@ -119,5 +122,11 @@ public class Console extends Thread implements CommandSender {
 
     public void printError(String line) {
         print(ANSI.BG_RED+ANSI.BOLD+"[ERROR]"+line);
+    }
+
+    public void stopConsole() {
+        running = false;
+        reader.getTerminal().reader().shutdown();
+        reader.getTerminal().writer().close();
     }
 }

@@ -3,7 +3,6 @@ package core;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import commands.*;
 import commands.implementations.*;
 import communication.Request;
@@ -14,6 +13,7 @@ import data.ChannelType;
 import data.Config;
 import data.DataLoader;
 
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
@@ -26,6 +26,8 @@ public class ServerWrapper extends Thread{
     private Set<ConnectionRequestHandler> preAuthClients = new HashSet<>();     // holds all connections that haven't established RSA tunnel
     private CommandRegister commandRegister = new CommandRegister();
     private Console console = new Console(this);
+    private volatile boolean running = true;
+    private ServerSocket ss;
 
 
     public Console getConsole() {
@@ -125,6 +127,8 @@ public class ServerWrapper extends Thread{
         commandRegister.registerCommand("block", new BlockCommand());
         commandRegister.registerCommand("unblock", new UnblockCommand());
 
+        commandRegister.registerCommand("stop", new StopCommand());
+
         for(JsonElement c : Config.getJsonArray("forbidden_commands")) {
             console.print("Command /"+c.getAsString()+" was disabled!");
             commandRegister.unregisterCommand(c.getAsString());
@@ -137,16 +141,16 @@ public class ServerWrapper extends Thread{
     public void run() {
         load();
         try {
-            ServerSocket ss = new ServerSocket(Config.getInt("port"));    // opening the socket
+            ss = new ServerSocket(Config.getInt("port"));    // opening the socket
 
             console.print("Connection receiver running on port:"+Config.getInt("port"));
             Socket socket;
             ConnectionRequestHandler client;
-            while (true) {
+            while (running) {
                 try {
                     socket = ss.accept();
                 }catch (Exception e) {
-                    e.printStackTrace();
+                    //e.printStackTrace();
                     break;
                 }
                 client = new ConnectionRequestHandler(socket);
@@ -156,6 +160,30 @@ public class ServerWrapper extends Thread{
         }catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void stopServer() {
+        console.print("Stopping main server thread..");
+        this.running = false;
+        try {
+            ss.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        console.print("Stopping pre-auth connections..");
+        for(ConnectionRequestHandler c : preAuthClients) {
+            c.stopConnection();
+        }
+        console.print("Disconnecting connected clients..");
+        for(ConnectionRequestHandler c : connectedClients) {
+            c.stopConnection();
+        }
+        console.print("Stopping command listeners..");
+        commandRegister.stopListeners();
+
+        console.print("Stopping terminal interface..");
+        console.print("press Enter to continue..");
+        console.stopConsole();
     }
 }
 

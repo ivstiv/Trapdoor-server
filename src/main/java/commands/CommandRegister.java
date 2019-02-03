@@ -14,6 +14,7 @@ public class CommandRegister {
     private BlockingQueue<Command> dispatchedCommands = new LinkedBlockingDeque<>();
     private HashMap<String, CommandExecutor> commands = new HashMap<>();
     private Thread commandListener;
+    private volatile boolean running = true;
 
     public CommandRegister() {
         commandListener = new Thread(runCommandListener());
@@ -47,7 +48,7 @@ public class CommandRegister {
 
     private Runnable runCommandListener() {
         return () -> {
-            while(true) {
+            while(running) {
                 try {
                     Command cmd = dispatchedCommands.take();
                     commands.get(cmd.getName()).onCommand(cmd.getSender(), cmd.getName(), cmd.getArgs());
@@ -57,5 +58,9 @@ public class CommandRegister {
 
             }
         };
+    }
+
+    public void stopListeners() {
+        running = false;
     }
 }
