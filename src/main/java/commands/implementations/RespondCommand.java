@@ -8,6 +8,7 @@ import communication.Request;
 import communication.RequestType;
 import core.ServerWrapper;
 import core.ServiceLocator;
+import data.ANSI;
 import data.DataLoader;
 
 public class RespondCommand implements CommandExecutor {
@@ -68,6 +69,10 @@ public class RespondCommand implements CommandExecutor {
 
                         // echo the message to the sender
                         client.sendRequest(req);
+
+                        //echo to the console
+                        if(server.getConsole().getMode().equals("default"))
+                            server.getConsole().print(ANSI.CYAN+senderUsername+" -> "+receiverUsername+":"+msg.toString());
                     }
                 }else{
                     // recipient is offline

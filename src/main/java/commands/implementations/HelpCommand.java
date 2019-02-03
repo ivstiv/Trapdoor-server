@@ -16,8 +16,9 @@ public class HelpCommand implements CommandExecutor {
     @Override
     public void onCommand(CommandSender sender, String command, String[] args) {
 
+        DataLoader dl = ServiceLocator.getService(DataLoader.class);
+
         if(sender instanceof ConnectionRequestHandler) {
-            DataLoader dl = ServiceLocator.getService(DataLoader.class);
             ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
 
             JsonObject payload = new JsonObject();
@@ -27,11 +28,11 @@ public class HelpCommand implements CommandExecutor {
             client.sendRequest(response);
             return;
 
-        }else if(sender instanceof Console) {
+        }
 
+        if(sender instanceof Console) {
             Console console = (Console) sender;
-            console.print(ANSI.GREEN+"HELP COMMAND");
-
+            console.print(dl.getMessage("cl-help"));
         }
     }
 }

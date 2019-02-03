@@ -19,12 +19,18 @@ import java.net.Socket;
 import java.util.*;
 import java.util.function.Predicate;
 
-public class ServerWrapper {
+public class ServerWrapper extends Thread{
 
     private List<Channel> channels = new ArrayList<>();
-    private Set<ConnectionRequestHandler> connectedClients = new HashSet<>();
+    private Set<ConnectionRequestHandler> connectedClients = new HashSet<>();   // holds all connections that have established RSA tunnel
+    private Set<ConnectionRequestHandler> preAuthClients = new HashSet<>();     // holds all connections that haven't established RSA tunnel
     private CommandRegister commandRegister = new CommandRegister();
     private Console console = new Console(this);
+
+
+    public Console getConsole() {
+        return console;
+    }
 
     public void dispatchCommand(CommandSender sender, String name, String[] args) {
 
@@ -56,6 +62,7 @@ public class ServerWrapper {
 
     public void addConnectedClient(ConnectionRequestHandler r) {
         connectedClients.add(r);
+        preAuthClients.remove(r);
     }
     public void removeConnectedClient(ConnectionRequestHandler r) {
         connectedClients.remove(r);
@@ -126,34 +133,29 @@ public class ServerWrapper {
         console.start();
     }
 
-    public void start() {
-
+    @Override
+    public void run() {
         load();
+        try {
+            ServerSocket ss = new ServerSocket(Config.getInt("port"));    // opening the socket
 
-        Thread requestReceiver = new Thread() {
-            public void run() {
+            console.print("Connection receiver running on port:"+Config.getInt("port"));
+            Socket socket;
+            ConnectionRequestHandler client;
+            while (true) {
                 try {
-                    ServerSocket ss = new ServerSocket(Config.getInt("port"));    // opening the socket
-
-                    console.print("Connection receiver running on port:"+Config.getInt("port"));
-                    Socket socket;
-                    ConnectionRequestHandler client;
-                    while (true) {
-                        try {
-                            socket = ss.accept();
-                        }catch (Exception e) {
-                            e.printStackTrace();
-                            break;
-                        }
-                        client = new ConnectionRequestHandler(socket);
-                        client.start();
-                    }
+                    socket = ss.accept();
                 }catch (Exception e) {
                     e.printStackTrace();
+                    break;
                 }
+                client = new ConnectionRequestHandler(socket);
+                client.start();
+                preAuthClients.add(client);
             }
-        };
-        requestReceiver.start();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
 

@@ -8,6 +8,7 @@ import communication.ConnectionRequestHandler;
 import communication.RequestType;
 import core.ServerWrapper;
 import core.ServiceLocator;
+import data.ANSI;
 import data.DataLoader;
 
 public class MsgCommand implements CommandExecutor {
@@ -69,6 +70,9 @@ public class MsgCommand implements CommandExecutor {
 
                     // echo the message to the sender
                     client.sendRequest(req);
+                    //echo to the console
+                    if(server.getConsole().getMode().equals("default"))
+                        server.getConsole().print(ANSI.CYAN+client.getClientData().getUsername()+" -> "+args[0]+":"+msg.toString());
                 }
             }else{
                 String msg = String.format("%s%s %s",

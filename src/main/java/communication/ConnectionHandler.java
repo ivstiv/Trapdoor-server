@@ -3,6 +3,7 @@ package communication;
 import com.google.gson.JsonObject;
 import communication.security.AES;
 import communication.security.RSA;
+import core.ServerWrapper;
 import core.ServiceLocator;
 import data.ConnectionData;
 import data.DataLoader;
@@ -17,7 +18,7 @@ import java.security.NoSuchAlgorithmException;
 public abstract class ConnectionHandler extends Thread{
 
     // Communication objects
-    private Socket client;
+    protected Socket client;
     private BufferedReader in;
     private PrintWriter out;
 
@@ -28,6 +29,7 @@ public abstract class ConnectionHandler extends Thread{
     protected ConnectionData clientData = new ConnectionData();
 
     protected DataLoader dl = ServiceLocator.getService(DataLoader.class);
+    protected ServerWrapper server = ServiceLocator.getService(ServerWrapper.class);
 
     public ConnectionHandler(Socket client) {
         this.client = client;
@@ -48,14 +50,14 @@ public abstract class ConnectionHandler extends Thread{
             String aesSignature = in.readLine();
 
             if (aesSecret == null || aesSignature == null) { // TO-DO: do something about this ! reads null on disconnect
-                System.out.println("[Handler]Host disconnected!");
+                server.getConsole().print("[Handler]Host disconnected during AES handshake!");
             }
 
             if(tunnel.verify(tunnel.decrypt(aesSecret), aesSignature)) {
                 aes = new AES(tunnel.decrypt(aesSecret));
-                System.out.println("AES setup finished!");
+              //  server.getConsole().print("AES setup finished!");
             }else{
-                System.out.println("AES signature failed!");
+                server.getConsole().print("AES signature failed!");
                 // TODO: 18-Nov-18 stop the connection and send status code
             }
 
@@ -73,12 +75,12 @@ public abstract class ConnectionHandler extends Thread{
         // wait for the public key of the client
         String clientKey = in.readLine();
         if (clientKey == null) { // TO-DO: do something about this ! reads null on disconnect
-            System.out.println("[Handler]Host disconnected!");
+            server.getConsole().print("[Handler]Host disconnected during RSA handshake!");
         }
 
         // register the client public key in the RSA object
         rsa.setRemotePublicKey(clientKey);
-        System.out.println("RSA tunnel initialised!");
+        //server.getConsole().print("RSA tunnel initialised!");
         return rsa;
     }
 
@@ -88,20 +90,21 @@ public abstract class ConnectionHandler extends Thread{
             encrypted = in.readLine();
         } catch (SocketException e) {
             //Kicks in when the client drops the connection unexpectedly
-            System.out.println("[Handler]Client disconnected!");
+            //server.getConsole().print("[Handler]Client disconnected!");
             return new Request(RequestType.DISCONNECT, new JsonObject());
 
         } catch (IOException e) {
-            System.out.println("[Handler]IOException in readRequest():");
+            server.getConsole().print("[Handler]IOException in readRequest():");
             e.printStackTrace();
         }
         if (encrypted == null) { // reads null on disconnect e.g end of the stream
-            System.out.println("[Handler]Client disconnected!");
+           // server.getConsole().print("[Handler]Client disconnected!");
             return new Request(RequestType.DISCONNECT, new JsonObject());
         }
 
         String decrypted = aes.decrypt(encrypted);
-        System.out.println("IN:"+decrypted);
+        if(server.getConsole().getMode().equals("traffic"))
+            server.getConsole().print("IN "+client.getInetAddress().getHostAddress()+":"+decrypted);
 
         return new Request(decrypted);
     }
@@ -111,7 +114,8 @@ public abstract class ConnectionHandler extends Thread{
     }
 
     protected synchronized void send(String msg) {
-        System.out.println("OUT:"+msg);
+        if(server.getConsole().getMode().equals("traffic"))
+            server.getConsole().print("OUT "+client.getInetAddress().getHostAddress()+":"+msg);
         out.println(aes.encrypt(msg));
         out.flush();
     }

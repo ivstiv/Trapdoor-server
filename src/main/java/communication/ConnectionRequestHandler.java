@@ -3,6 +3,7 @@ package communication;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import commands.CommandSender;
+import data.ANSI;
 import data.Config;
 import core.ServerWrapper;
 import core.ServiceLocator;
@@ -19,10 +20,9 @@ public class ConnectionRequestHandler extends ConnectionHandler implements Comma
 
     @Override
     public void run() {
-        System.out.println("Starting Handler thread:"+this.toString());
+        //server.getConsole().print("Starting Handler thread:"+this.toString());
         initialiseStreams();
 
-        ServerWrapper server = ServiceLocator.getService(ServerWrapper.class);
         while (true) {
             Request r = null;
             try {
@@ -53,8 +53,15 @@ public class ConnectionRequestHandler extends ConnectionHandler implements Comma
                             args = new String[0];
                         }
                         server.dispatchCommand(this, name, args);
+
+                        if(server.getConsole().getMode().equals("default"))
+                            server.getConsole().print(ANSI.CYAN+clientData.getUsername()+" issued a command: /"+name);
+                        if(server.getConsole().getMode().equals("commands-only"))
+                            server.getConsole().print(ANSI.CYAN+clientData.getUsername()+" issued a command: "+message);
                     }else{
                         clientData.getActiveChannel().broadcastMsg(this, message); // forward the message
+                        if(server.getConsole().getMode().equals("default"))
+                            server.getConsole().print(ANSI.CYAN+clientData.getUsername()+":"+message);
                     }
                     break;
                 case ACTION:
@@ -62,7 +69,8 @@ public class ConnectionRequestHandler extends ConnectionHandler implements Comma
                     break;
                 case DISCONNECT:
                     // may be close the streams first
-                    System.out.println("Stopping Handler thread:"+this.toString());
+                    if(server.getConsole().getMode().equals("default"))
+                        server.getConsole().print(ANSI.CYAN+clientData.getUsername()+" left the server.");
                     server.removeConnectedClient(this);
                     return;
                 case CONNECT:
@@ -129,6 +137,10 @@ public class ConnectionRequestHandler extends ConnectionHandler implements Comma
                     payload.addProperty("channel", clientData.getActiveChannel().getName());
                     Request statusBar = new Request(RequestType.ACTION, payload);
                     sendRequest(statusBar);
+
+                    // console print
+                    if(server.getConsole().getMode().equals("default"))
+                        server.getConsole().print(ANSI.CYAN+clientData.getUsername()+" joined the server.");
                     break;
             }
         }
