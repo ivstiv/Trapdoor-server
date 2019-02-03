@@ -27,6 +27,9 @@ public class CommandRegister {
     public void registerCommand(String command, CommandExecutor executor) {
         commands.put(command, executor);
     }
+    public void unregisterCommand(String command) {
+        commands.remove(command);
+    }
 
     public Set<String> registeredCommands() {
         return commands.keySet();

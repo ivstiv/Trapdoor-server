@@ -31,4 +31,6 @@ public final class ANSI {
     public static final String BOLD = "\u001B[1m";
     public static final String UNDERLINE = "\u001B[4m";
 
+    public static final String ERASE_SCREEN = "\u001B[2J";
+
 }

@@ -22,5 +22,8 @@
   "cant-send": "~1~a[Server]~r~fYou can't send messages to that user anymore. :(",
   "nobody": "~1~a[Server]~r~fNobody to respond to.",
   "bye": "~1~dBye, bye!",
-  "prefix": "~1~a[Server]~g"
+  "prefix": "~1~a[Server]~g",
+  "cl-unknown-cmd":"Unknown command. Type \"help\" for help.",
+  "cl-missing-argument":"Missing argument, please check the list with commands and try again.",
+  "cl-invalid-argument": "Invalid argument, please check the list with commands and try again."
 }

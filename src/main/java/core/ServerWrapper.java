@@ -3,6 +3,7 @@ package core;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import commands.*;
 import commands.implementations.*;
 import communication.Request;
@@ -26,19 +27,24 @@ public class ServerWrapper {
     private Console console = new Console(this);
 
     public void dispatchCommand(CommandSender sender, String name, String[] args) {
+
         Command cmd = new Command(sender, name, args);
+        DataLoader dl = ServiceLocator.getService(DataLoader.class);
 
         if(!commandRegister.dispatch(cmd)) {  // return false if the command is not registered
             if(sender instanceof ConnectionRequestHandler) {
 
                 ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
-                DataLoader dl = ServiceLocator.getService(DataLoader.class);
 
                 JsonObject payload = new JsonObject();
                 payload.addProperty("action", "print");
                 payload.addProperty("message", dl.getMessage("unknown-command"));
                 Request req = new Request(RequestType.ACTION, payload);
                 client.sendRequest(req);
+                return;
+            }
+            if(sender instanceof  Console) {
+                console.print(dl.getMessage("cl-unknown-cmd"));
             }
         }
 
@@ -83,10 +89,11 @@ public class ServerWrapper {
     }
 
     private void load() {
+        console.print("Loading config data. . .");
         // load channels from config
         JsonArray arr = Config.getJsonArray("channels");
         if(arr.size() == 0) {
-            System.out.println("[ERROR]There aren't any defined channels in the config!");
+            console.printError("There aren't any defined channels in the config!");
             System.exit(1);
         }
         for(JsonElement el : arr) {
@@ -111,18 +118,12 @@ public class ServerWrapper {
         commandRegister.registerCommand("block", new BlockCommand());
         commandRegister.registerCommand("unblock", new UnblockCommand());
 
-        console.start();
-
-        for(int i = 0; i < 30; i++) {
-
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            console.print("Test");
+        for(JsonElement c : Config.getJsonArray("forbidden_commands")) {
+            console.print("Command /"+c.getAsString()+" was disabled!");
+            commandRegister.unregisterCommand(c.getAsString());
         }
 
+        console.start();
     }
 
     public void start() {
@@ -134,7 +135,7 @@ public class ServerWrapper {
                 try {
                     ServerSocket ss = new ServerSocket(Config.getInt("port"));    // opening the socket
 
-                    console.print("Request receiver running at port %d"+Config.getInt("port"));
+                    console.print("Connection receiver running on port:"+Config.getInt("port"));
                     Socket socket;
                     ConnectionRequestHandler client;
                     while (true) {
