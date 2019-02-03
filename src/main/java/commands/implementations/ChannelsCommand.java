@@ -6,6 +6,7 @@ import commands.CommandSender;
 import communication.Request;
 import communication.ConnectionRequestHandler;
 import communication.RequestType;
+import core.Console;
 import core.ServerWrapper;
 import core.ServiceLocator;
 import data.Channel;
@@ -16,10 +17,11 @@ public class ChannelsCommand implements CommandExecutor {
     @Override
     public void onCommand(CommandSender sender, String command, String[] args) {
 
-        if(sender instanceof ConnectionRequestHandler) {
+        ServerWrapper server = ServiceLocator.getService(ServerWrapper.class);
+        DataLoader dl = ServiceLocator.getService(DataLoader.class);
 
-            ServerWrapper server = ServiceLocator.getService(ServerWrapper.class);
-            DataLoader dl = ServiceLocator.getService(DataLoader.class);
+
+        if(sender instanceof ConnectionRequestHandler) {
             ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
 
             StringBuilder channelsText = new StringBuilder(dl.getMessage("available-channels"));
@@ -33,7 +35,16 @@ public class ChannelsCommand implements CommandExecutor {
             payload.addProperty("message", channelsText.toString());
             Request response = new Request(RequestType.ACTION, payload);
             client.sendRequest(response);
+            return;
         }
-        // TODO: 20-Nov-18 add options for ConsoleSender later
+
+        if(sender instanceof Console) {
+            StringBuilder channelsText = new StringBuilder(dl.getMessage("cl-available-channels"));
+            for(Channel ch : server.getChannels()) {
+                String entry = String.format("\n   - [%s] %s %d", ch.getName(), ch.getType().toString(), ch.getClients().size());
+                channelsText.append(entry);
+            }
+            server.getConsole().print(channelsText.toString());
+        }
     }
 }

@@ -6,6 +6,7 @@ import commands.CommandSender;
 import communication.Request;
 import communication.ConnectionRequestHandler;
 import communication.RequestType;
+import core.Console;
 import core.ServerWrapper;
 import core.ServiceLocator;
 import data.ANSI;
@@ -18,11 +19,10 @@ public class MsgCommand implements CommandExecutor {
     @Override
     public void onCommand(CommandSender sender, String command, String[] args) {
 
+        ServerWrapper server = ServiceLocator.getService(ServerWrapper.class);
+        DataLoader dl = ServiceLocator.getService(DataLoader.class);
+
         if (sender instanceof ConnectionRequestHandler) {
-
-            ServerWrapper server = ServiceLocator.getService(ServerWrapper.class);
-            DataLoader dl = ServiceLocator.getService(DataLoader.class);
-
             ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
 
             // check if arguments exists
@@ -79,6 +79,10 @@ public class MsgCommand implements CommandExecutor {
                         dl.getMessage("prefix"), args[0], dl.getMessage("offline"));
                 client.sendServerMessage(msg);
             }
+        }
+
+        if(sender instanceof Console) {
+            server.getConsole().print(dl.getMessage("cl-unknown-cmd"));
         }
     }
 }

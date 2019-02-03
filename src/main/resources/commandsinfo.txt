@@ -1,0 +1,38 @@
+✔ - implemented either for RequestHandler or Console
+✗ - doesn't need to be implemented
+RC - position meaning(Request handler, Console)
+
+Normal commands:
+RC
+✔✔	- /help							| Shows available commands.
+✔✔	- /channels						| Shows a list with the available channels.
+✔✔	- /online						| Shows a list with online users and their channels.
+✔✔	- /clear						| Clears the chat window of the client.
+✔✗	- /block <username>				| Blocks all messages from that username.
+✔✗	- /unblock <username>			| Unblocks the username.
+✔✗	- /join <channel> [password] 	| Changes channel.
+✔✗	- /msg <recipient> <msg>		| Sends a private message across different channels.
+✔✗	- /r <msg>						| Responds to the last private message.
+ ✗	- /file <username>				| Opens a file prompt and sends a file.
+ ✗	- /sudo <cmd>					| Grants elevated privileges to execute admin commands.
+✔✗	- /exit							| Terminates the connection with the client.
+
+Sudo commands:
+RC
+    - /info <username>		        | Shows information about the connection.
+	- /ban <username>		        | Adds the username to forbidden usernames and kicks the client.
+	- /unban <username>		        | Removes the username from forbidden usernames.
+	- /ipban <ip>                   |
+	- /ipunban <ip>                 |
+	- /kick <username>              |
+	- /mute <username>              |
+	- /broadcast <msg> [channel]    |
+	- /say <msg> [username]         |
+
+Console commands:
+RC
+✗✔	- /mode <default/traffic/debug/commands-only>   | Changes the console mode.
+✗	- /reload                                       | Reloads the config and the server.
+✗	- /stop                                         | Stops the server.
+	- some normal commands (help, channels, online, clear)
+	- all sudo commands (won't require sudo)

@@ -6,6 +6,7 @@ import commands.CommandSender;
 import communication.Request;
 import communication.ConnectionRequestHandler;
 import communication.RequestType;
+import core.Console;
 import core.ServerWrapper;
 import core.ServiceLocator;
 import data.DataLoader;
@@ -15,10 +16,10 @@ public class ExitCommand implements CommandExecutor {
     @Override
     public void onCommand(CommandSender sender, String command, String[] args) {
 
-        if (sender instanceof ConnectionRequestHandler) {
+        ServerWrapper server = ServiceLocator.getService(ServerWrapper.class);
+        DataLoader dl = ServiceLocator.getService(DataLoader.class);
 
-            ServerWrapper server = ServiceLocator.getService(ServerWrapper.class);
-            DataLoader dl = ServiceLocator.getService(DataLoader.class);
+        if(sender instanceof ConnectionRequestHandler) {
 
             ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
 
@@ -40,6 +41,10 @@ public class ExitCommand implements CommandExecutor {
 
             // remove the client and shut down the thread and the socket streams
             client.stopConnection();
+        }
+
+        if(sender instanceof Console) {
+            server.getConsole().print(dl.getMessage("cl-unknown-cmd"));
         }
     }
 }

@@ -112,7 +112,7 @@ public class Console extends Thread implements CommandSender {
         // append time and format the message
         LocalDateTime now = LocalDateTime.now();
         String time = now.format(DateTimeFormatter.ofPattern("HH:mm:ss", Locale.ENGLISH));
-        String msgFormat = String.format("[%s]: %s%s", time, line, ANSI.RESET);
+        String msgFormat = String.format("[%s] %s%s", time, line, ANSI.RESET);
 
         reader.printAbove(new AttributedString(msgFormat));
     }

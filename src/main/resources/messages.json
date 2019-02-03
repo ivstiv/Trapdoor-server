@@ -23,8 +23,9 @@
   "nobody": "~1~a[Server]~r~fNobody to respond to.",
   "bye": "~1~dBye, bye!",
   "prefix": "~1~a[Server]~g",
+  "cl-available-channels": "Available channels (name, type, online):",
   "cl-unknown-cmd":"Unknown command. Type \"help\" for help.",
   "cl-missing-argument":"Missing argument, please check the list with commands and try again.",
   "cl-invalid-argument": "Invalid argument, please check the list with commands and try again.",
-  "cl-help": "Commands:\n  /help | Shows this menu.\n  /online | Shows a list with online users and their channels.\n  /channels | Shows a list with the available channels.\n  /msg <user> | Sends a private message across different channels.\n  /clear | Clears the chat window of the client.\n"
+  "cl-help": "Commands:\n  /help | Shows this menu.\n  /online | Shows a list with online users and their channels.\n  /channels | Shows a list with the available channels.\n  /clear | Clears the chat window of the client.\n  /mode <default/traffic/debug/commands-only> | Changes the console mode."
 }

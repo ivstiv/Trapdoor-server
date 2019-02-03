@@ -3,6 +3,7 @@ package commands.implementations;
 import commands.CommandExecutor;
 import commands.CommandSender;
 import communication.ConnectionRequestHandler;
+import core.Console;
 import core.ServerWrapper;
 import core.ServiceLocator;
 import data.DataLoader;
@@ -13,10 +14,10 @@ public class BlockCommand implements CommandExecutor {
     @Override
     public void onCommand(CommandSender sender, String command, String[] args) {
 
-        if (sender instanceof ConnectionRequestHandler) {
+        ServerWrapper server = ServiceLocator.getService(ServerWrapper.class);
+        DataLoader dl = ServiceLocator.getService(DataLoader.class);
 
-            ServerWrapper server = ServiceLocator.getService(ServerWrapper.class);
-            DataLoader dl = ServiceLocator.getService(DataLoader.class);
+        if (sender instanceof ConnectionRequestHandler) {
 
             ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
 
@@ -52,6 +53,10 @@ public class BlockCommand implements CommandExecutor {
                         dl.getMessage("prefix"), args[0], dl.getMessage("offline"));
                 client.sendServerMessage(msg);
             }
+        }
+
+        if (sender instanceof Console) {
+            server.getConsole().print(dl.getMessage("cl-unknown-cmd"));
         }
     }
 }

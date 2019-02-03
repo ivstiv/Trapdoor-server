@@ -6,6 +6,7 @@ import commands.CommandSender;
 import communication.ConnectionRequestHandler;
 import communication.Request;
 import communication.RequestType;
+import core.Console;
 import core.ServerWrapper;
 import core.ServiceLocator;
 import data.ANSI;
@@ -16,12 +17,11 @@ public class RespondCommand implements CommandExecutor {
     @Override
     public void onCommand(CommandSender sender, String command, String[] args) {
 
+        ServerWrapper server = ServiceLocator.getService(ServerWrapper.class);
+        DataLoader dl = ServiceLocator.getService(DataLoader.class);
+
         if (sender instanceof ConnectionRequestHandler) {
-
             ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
-
-            ServerWrapper server = ServiceLocator.getService(ServerWrapper.class);
-            DataLoader dl = ServiceLocator.getService(DataLoader.class);
 
             // check if argument exists
             if(args.length < 1) {
@@ -84,6 +84,10 @@ public class RespondCommand implements CommandExecutor {
                 // nobody to respond to
                 client.sendServerMessage(dl.getMessage("nobody"));
             }
+        }
+
+        if(sender instanceof Console) {
+            server.getConsole().print(dl.getMessage("cl-unknown-cmd"));
         }
     }
 }

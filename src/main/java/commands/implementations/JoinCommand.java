@@ -6,6 +6,7 @@ import commands.CommandSender;
 import communication.Request;
 import communication.ConnectionRequestHandler;
 import communication.RequestType;
+import core.Console;
 import core.ServerWrapper;
 import core.ServiceLocator;
 import data.Channel;
@@ -58,6 +59,10 @@ public class JoinCommand implements CommandExecutor {
                 client.sendServerMessage(dl.getMessage("unknown-channel"));
                 return;
             }
+        }
+
+        if(sender instanceof Console) {
+            server.getConsole().print(dl.getMessage("cl-unknown-cmd"));
         }
     }
 

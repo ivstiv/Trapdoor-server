@@ -3,6 +3,8 @@ package commands.implementations;
 import commands.CommandExecutor;
 import commands.CommandSender;
 import communication.ConnectionRequestHandler;
+import core.Console;
+import core.ServerWrapper;
 import core.ServiceLocator;
 import data.DataLoader;
 
@@ -11,10 +13,10 @@ public class UnblockCommand implements CommandExecutor {
     @Override
     public void onCommand(CommandSender sender, String command, String[] args) {
 
+        DataLoader dl = ServiceLocator.getService(DataLoader.class);
+        ServerWrapper server = ServiceLocator.getService(ServerWrapper.class);
+
         if (sender instanceof ConnectionRequestHandler) {
-
-            DataLoader dl = ServiceLocator.getService(DataLoader.class);
-
             ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
 
             // check if arguments exists
@@ -42,6 +44,10 @@ public class UnblockCommand implements CommandExecutor {
             }else{
                 client.sendServerMessage(dl.getMessage("already-unblocked"));
             }
+        }
+
+        if(sender instanceof Console) {
+            server.getConsole().print(dl.getMessage("cl-unknown-cmd"));
         }
     }
 }
