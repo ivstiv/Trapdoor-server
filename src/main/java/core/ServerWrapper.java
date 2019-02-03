@@ -21,10 +21,10 @@ import java.util.function.Predicate;
 
 public class ServerWrapper extends Thread{
 
-    private List<Channel> channels = new ArrayList<>();
+    private List<Channel> channels;
     private Set<ConnectionRequestHandler> connectedClients = new HashSet<>();   // holds all connections that have established RSA tunnel
     private Set<ConnectionRequestHandler> preAuthClients = new HashSet<>();     // holds all connections that haven't established RSA tunnel
-    private CommandRegister commandRegister = new CommandRegister();
+    private CommandRegister commandRegister;
     private Console console = new Console(this);
     private volatile boolean running = true;
     private ServerSocket ss;
@@ -105,6 +105,8 @@ public class ServerWrapper extends Thread{
             console.printError("There aren't any defined channels in the config!");
             System.exit(1);
         }
+
+        channels = new ArrayList<>();
         for(JsonElement el : arr) {
             ChannelType type = ChannelType.valueOf(el.getAsJsonObject().get("type").getAsString().toUpperCase());
             String name = el.getAsJsonObject().get("name").getAsString();
@@ -116,6 +118,7 @@ public class ServerWrapper extends Thread{
             }
         }
 
+        commandRegister = new CommandRegister();
         commandRegister.registerCommand("help", new HelpCommand());
         commandRegister.registerCommand("channels", new ChannelsCommand());
         commandRegister.registerCommand("online", new OnlineCommand());
@@ -128,13 +131,19 @@ public class ServerWrapper extends Thread{
         commandRegister.registerCommand("unblock", new UnblockCommand());
 
         commandRegister.registerCommand("stop", new StopCommand());
+        commandRegister.registerCommand("colors", new ColorsCommand());
 
         for(JsonElement c : Config.getJsonArray("forbidden_commands")) {
-            console.print("Command /"+c.getAsString()+" was disabled!");
-            commandRegister.unregisterCommand(c.getAsString());
+            String cmd = c.getAsString().replaceAll("/","");
+            if(commandRegister.registeredCommands().contains(cmd)) {
+                console.print("Command /"+cmd+" was disabled!");
+                commandRegister.unregisterCommand(cmd);
+            }
         }
 
         console.start();
+        Config.getJsonArray("forbidden_usernames").add("test");
+        Config.updateFile();
     }
 
     @Override
@@ -153,6 +162,7 @@ public class ServerWrapper extends Thread{
                     //e.printStackTrace();
                     break;
                 }
+                // TODO: 03-Feb-19 output to traffic console all incoming connections with ips 
                 client = new ConnectionRequestHandler(socket);
                 client.start();
                 preAuthClients.add(client);

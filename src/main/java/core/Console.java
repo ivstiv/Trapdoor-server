@@ -19,7 +19,7 @@ public class Console extends Thread implements CommandSender {
     private LineReader reader = LineReaderBuilder.builder().build();
 
     private volatile String mode = "default";
-    private String[] array = {"default", "traffic", "debug", "commands-only"};
+    private String[] array = {"default", "traffic", "debug", "commands-only", "silent"};
     private List<String> availableModes = Arrays.asList(array);
 
     private volatile boolean running = true;
@@ -41,6 +41,10 @@ public class Console extends Thread implements CommandSender {
             } catch (UserInterruptException | EndOfFileException e) {
                 e.printStackTrace();
             }
+
+            // skip empty inputs
+            if(cmd.trim().isEmpty()) continue;
+
 
             // dispatch the command
             cmd = cmd.replaceAll("/", "");
@@ -73,33 +77,6 @@ public class Console extends Thread implements CommandSender {
             }else{
                 server.dispatchCommand(this, name, args);
             }
-
-
-
-
-
-
-            /*
-            print(ANSI.CYAN+"User123 issued a command /help");
-            print(ANSI.CYAN+"User123 issued a command "+ANSI.WHITE+ANSI.BG_RED+"/sudo /ban user4");
-            printError(ANSI.CYAN+"[global]User123 ko staa");
-            print(ANSI.CYAN+"User5 issued a command /msg User123 opaa");
-            print(ANSI.BOLD+"BOLD");
-            print(ANSI.UNDERLINE+"UNDERLINE");
-            print(ANSI.BLACK+"BLACK");
-            print(ANSI.RED+"RED");
-            print(ANSI.GREEN+"GREEN");
-            print(ANSI.YELLOW+"YELLOW");
-            print(ANSI.BLUE+"BLUE");
-            print(ANSI.MAGENTA+"MAGENTA");
-            print(ANSI.CYAN+"CYAN");
-            print(ANSI.WHITE+"WHITE");
-            print(ANSI.LIGHT_RED+"LIGHT RED");
-            print(ANSI.LIGHT_GREEN+"LIGHT GREEN");
-            print(ANSI.LIGHT_BLUE+"LIGHT BLUE");
-            print(ANSI.LIGHT_CYAN+"LIGHT CYAN");
-            print(ANSI.LIGHT_PURPLE+"LIGHT PURPLE");
-            */
         }
     }
 
