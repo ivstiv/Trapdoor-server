@@ -64,6 +64,8 @@ public abstract class ConnectionHandler extends Thread{
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        clientData.setIp(client.getInetAddress().getHostAddress());
     }
 
     private RSA getRSAHandshake() throws IOException, NoSuchAlgorithmException {

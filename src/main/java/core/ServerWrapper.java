@@ -3,15 +3,13 @@ package core;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import commands.*;
 import commands.implementations.*;
 import communication.Request;
 import communication.ConnectionRequestHandler;
 import communication.RequestType;
-import data.Channel;
-import data.ChannelType;
-import data.Config;
-import data.DataLoader;
+import data.*;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -119,6 +117,7 @@ public class ServerWrapper extends Thread{
         }
 
         commandRegister = new CommandRegister();
+        // user commands
         commandRegister.registerCommand("help", new HelpCommand());
         commandRegister.registerCommand("channels", new ChannelsCommand());
         commandRegister.registerCommand("online", new OnlineCommand());
@@ -129,7 +128,18 @@ public class ServerWrapper extends Thread{
         commandRegister.registerCommand("clear", new ClearCommand());
         commandRegister.registerCommand("block", new BlockCommand());
         commandRegister.registerCommand("unblock", new UnblockCommand());
-
+        // admin commands
+        commandRegister.registerCommand("info", new InfoCommand());
+        commandRegister.registerCommand("ban", new BanCommand());
+        commandRegister.registerCommand("unban", new UnbanCommand());
+        commandRegister.registerCommand("ipban", new IpbanCommand());
+        commandRegister.registerCommand("ipunban", new IpunbanCommand());
+        commandRegister.registerCommand("kick", new KickCommand());
+        commandRegister.registerCommand("mute", new MuteCommand());
+        commandRegister.registerCommand("unmute", new UnmuteCommand());
+        commandRegister.registerCommand("broadcast", new BroadcastCommand());
+        commandRegister.registerCommand("tell", new TellCommand());
+        // console commands
         commandRegister.registerCommand("stop", new StopCommand());
         commandRegister.registerCommand("colors", new ColorsCommand());
 
@@ -142,8 +152,6 @@ public class ServerWrapper extends Thread{
         }
 
         console.start();
-        Config.getJsonArray("forbidden_usernames").add("test");
-        Config.updateFile();
     }
 
     @Override
@@ -162,10 +170,26 @@ public class ServerWrapper extends Thread{
                     //e.printStackTrace();
                     break;
                 }
-                // TODO: 03-Feb-19 output to traffic console all incoming connections with ips 
-                client = new ConnectionRequestHandler(socket);
-                client.start();
-                preAuthClients.add(client);
+
+                // check if the ip is not banned
+                String ip = socket.getInetAddress().getHostAddress();
+                if(Config.getJsonArray("forbidden_ips").contains(new JsonPrimitive(ip))) {
+
+                    // this will not return anything to the client, just close the socket
+                    if(getConsole().getMode().equals("default"))
+                        getConsole().print(ANSI.CYAN+"Client tried to login with forbidden ip: "+ip);
+                    socket.close();
+
+                } else {
+
+                    client = new ConnectionRequestHandler(socket);
+                    client.start();
+                    preAuthClients.add(client);
+
+                }
+
+                if(getConsole().getMode().equals("traffic"))
+                    getConsole().print("CONNECT FROM: "+ip);
             }
         }catch (Exception e) {
             e.printStackTrace();

@@ -19,15 +19,16 @@ RC
 
 Sudo commands:
 RC
-    - /info <username>		        | Shows information about the connection.
-	- /ban <username>		        | Adds the username to forbidden usernames and kicks the client.
-	- /unban <username>		        | Removes the username from forbidden usernames.
-	- /ipban <ip>                   | Adds the ip to forbidden ips and kicks the client.
-	- /ipunban <ip>                 | Removes the ip from forbidden ips.
-	- /kick <username>              | Terminates the connection of the client.
-	- /mute <username>              | Prevents the client from writing to anyone.
-	- /broadcast <msg> [channel]    | Sends a message to all channels or to a specific one.
-	- /say <msg> <username>         | Sends a message to a client.
+ ✔  - /info <username>		        | Shows information about the connection.
+ ✔  - /ban <username>		        | Adds the username to forbidden usernames and kicks the client.
+ ✔	- /unban <username>		        | Removes the username from forbidden usernames.
+ ✔	- /ipban <ip>                   | Adds the ip to forbidden ips and kicks the client.
+ ✔	- /ipunban <ip>                 | Removes the ip from forbidden ips.
+ ✔	- /kick <username>              | Terminates the connection of the client.
+ ✔	- /mute <username>              | Prevents the client from writing to anyone.
+ ✔	- /unmute <username>            | Unmutes the client.
+ ✔	- /broadcast <channel/all> <msg>| Sends a message to all channels or to a specific one.
+ ✔	- /tell <username> <msg>         | Sends a message to a client.
 
 Console commands:
 RC

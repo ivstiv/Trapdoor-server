@@ -10,9 +10,10 @@ import java.util.Set;
 
 public class ConnectionData {
 
-    private String username, lastPrivateSenderUsername = "";
+    private String username, ip, lastPrivateSenderUsername = "";
     private Channel activeChannel;
     private Set<String> blockedUsernames = new HashSet<>();
+    private boolean muted = false;
 
     public String getUsername() {
         return username;
@@ -48,5 +49,21 @@ public class ConnectionData {
 
     public void unblockUsername(String username) {
         this.blockedUsernames.remove(username);
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+
+    public void setMuted(boolean state) {
+        muted = state;
+    }
+
+    public boolean isMuted() {
+        return muted;
     }
 }

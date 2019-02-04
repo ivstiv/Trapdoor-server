@@ -41,6 +41,9 @@ public class ConnectionRequestHandler extends ConnectionHandler implements Comma
 
             switch(r.getType()) {
                 case MSG:
+
+                    if(getClientData().isMuted()) break;
+
                     String message = r.getContent().get("message").getAsString();
 
                     if(message.startsWith("/")) {
@@ -69,13 +72,16 @@ public class ConnectionRequestHandler extends ConnectionHandler implements Comma
                     break;
                 case DISCONNECT:
                     // may be close the streams first
-                    if(server.getConsole().getMode().equals("default"))
-                        server.getConsole().print(ANSI.CYAN+clientData.getUsername()+" left the server.");
+                    if(clientData.getUsername() != null)
+                        if(server.getConsole().getMode().equals("default"))
+                            server.getConsole().print(ANSI.CYAN+clientData.getUsername()+" left the server.");
                     server.removeConnectedClient(this);
                     return;
                 case CONNECT:
                     String username = r.getContent().get("username").getAsString();
                     String password = r.getContent().get("password").getAsString();
+
+                    // TODO: 04-Feb-19 check if the username is a-zA-Z0-9 regex
 
                     // check if the server is full
                     if(server.getConnectedClients().size() >= Config.getInt("slots")) {
@@ -93,6 +99,8 @@ public class ConnectionRequestHandler extends ConnectionHandler implements Comma
                             payload.addProperty("code", 200);
                             Request req = new Request(RequestType.RESPONSE, payload);
                             sendRequest(req);
+                            if(server.getConsole().getMode().equals("default"))
+                                server.getConsole().print(ANSI.CYAN+"Client tried to login with wrong password: "+username);
                             break;
                         }
                     }
@@ -103,6 +111,8 @@ public class ConnectionRequestHandler extends ConnectionHandler implements Comma
                         payload.addProperty("code", 202);
                         Request req = new Request(RequestType.RESPONSE, payload);
                         sendRequest(req);
+                        if(server.getConsole().getMode().equals("default"))
+                            server.getConsole().print(ANSI.CYAN+"Client tried to login with forbidden username: "+username);
                         break;
                     }
 
