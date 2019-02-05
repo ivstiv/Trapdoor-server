@@ -9,6 +9,7 @@
   "port": 38000,
   "rsa_length": 2048,
   "slots": 50,
+  "sudo_password": "supersecret12",
   "channels": [
       {
         "name":"global",

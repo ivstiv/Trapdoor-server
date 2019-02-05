@@ -28,7 +28,7 @@ RC
  ✔	- /mute <username>              | Prevents the client from writing to anyone.
  ✔	- /unmute <username>            | Unmutes the client.
  ✔	- /broadcast <channel/all> <msg>| Sends a message to all channels or to a specific one.
- ✔	- /tell <username> <msg>         | Sends a message to a client.
+✔✔	- /tell <username> <msg>        | Sends a message to a client.
 
 Console commands:
 RC
@@ -39,6 +39,7 @@ RC
 	- all sudo commands (won't require sudo)
 
 Long-term todos:
+    - ScheduleWorker thread to remove all sudo session older than 1 minute and maybe used for tempban and tempmute
     - Unified colors across console and clients. (Codes and actual colors :D)
     - sudo functionality
     - update readme

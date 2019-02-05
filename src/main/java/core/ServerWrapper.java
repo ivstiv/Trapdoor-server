@@ -24,9 +24,44 @@ public class ServerWrapper extends Thread{
     private Set<ConnectionRequestHandler> preAuthClients = new HashSet<>();     // holds all connections that haven't established RSA tunnel
     private CommandRegister commandRegister;
     private Console console = new Console(this);
+    private Set<SudoSession> sudoSessions = new HashSet<>();
     private volatile boolean running = true;
     private ServerSocket ss;
 
+
+    public Set<SudoSession> getAllSudoSessions() {
+        return sudoSessions;
+    }
+
+    public SudoSession getSudoSession(String id) throws Exception {
+
+        Optional<SudoSession> entry = sudoSessions.stream()
+                .filter(session -> session.getId().equals(id))
+                .findFirst();
+
+        if(entry.isPresent()) {
+            return entry.get();
+        }else{
+            throw new Exception("Invalid sudo session. id:"+id);
+        }
+    }
+
+    public SudoSession getSudoSession(ConnectionRequestHandler client) throws Exception {
+
+        Optional<SudoSession> entry = sudoSessions.stream()
+                .filter(session -> session.getSender().equals(client))
+                .findFirst();
+
+        if(entry.isPresent()) {
+            return entry.get();
+        }else{
+            throw new Exception("Invalid sudo session. client:"+client);
+        }
+    }
+
+    public void addSudoSession(SudoSession session) {
+        this.sudoSessions.add(session);
+    }
 
     public Console getConsole() {
         return console;
@@ -139,6 +174,7 @@ public class ServerWrapper extends Thread{
         commandRegister.registerCommand("unmute", new UnmuteCommand());
         commandRegister.registerCommand("broadcast", new BroadcastCommand());
         commandRegister.registerCommand("tell", new TellCommand());
+        commandRegister.registerCommand("sudo", new SudoCommand());
         // console commands
         commandRegister.registerCommand("stop", new StopCommand());
         commandRegister.registerCommand("colors", new ColorsCommand());

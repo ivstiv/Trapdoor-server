@@ -21,7 +21,7 @@ public class ClearCommand implements CommandExecutor {
             ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
 
             JsonObject payload = new JsonObject();
-            payload.addProperty("action", "clear-chat");
+            payload.addProperty("action", "clear_chat");
             Request response = new Request(RequestType.ACTION, payload);
             client.sendRequest(response);
         }

@@ -3,6 +3,7 @@ package communication;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import commands.CommandSender;
+import commands.SudoSession;
 import data.ANSI;
 import data.Config;
 import core.ServerWrapper;
@@ -11,6 +12,8 @@ import data.ChannelType;
 import exceptions.MalformedRequestException;
 
 import java.net.Socket;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class ConnectionRequestHandler extends ConnectionHandler implements CommandSender {
 
@@ -49,7 +52,7 @@ public class ConnectionRequestHandler extends ConnectionHandler implements Comma
                     if(message.startsWith("/")) {
                         // dispatch the command
                         String name = message.split(" ")[0].replaceAll("/", "");
-                        String[] args = null;
+                        String[] args;
                         if(message.length() > name.length()+1) {
                             args = message.substring(name.length()+2).split(" ");
                         }else{
@@ -69,6 +72,42 @@ public class ConnectionRequestHandler extends ConnectionHandler implements Comma
                     break;
                 case ACTION:
                     String action = r.getContent().get("action").getAsString();
+
+                    /* SUDO CONFIRMATION PASSWORD */
+                    if(action.equals("confirm_sudo")) {
+                        String sessionId = r.getContent().get("session_id").getAsString();
+                        String password = r.getContent().get("sudo_password").getAsString();
+
+                        try {
+                            SudoSession session = server.getSudoSession(sessionId);
+                            if(session.verifyPassword(password)) {
+
+                                String name = session.getCommand()[0].replaceAll("/", "");
+                                String[] args;
+                                if(session.getCommand().length > 1) {
+                                    args = Arrays.copyOfRange(session.getCommand(), 1, session.getCommand().length);
+                                }else{
+                                    args = new String[0];
+                                }
+
+                                server.dispatchCommand(this, name, args);
+
+                                if(server.getConsole().getMode().equals("default"))
+                                    server.getConsole().print(ANSI.BG_RED+ANSI.WHITE+clientData.getUsername()+" issued a command: /"+name);
+                                if(server.getConsole().getMode().equals("commands-only")) {
+
+                                    String cmd = String.join(" ", session.getCommand());
+                                    server.getConsole().print(ANSI.BG_RED+ANSI.WHITE+clientData.getUsername()+" issued a command: /"+cmd);
+                                }
+
+                            }else{
+                                sendServerMessage(dl.getMessage("invalid-sudo-pass"));
+                            }
+
+                        } catch (Exception e) {
+                            sendServerMessage(dl.getMessage("invalid-sudo-session"));
+                        }
+                    }
                     break;
                 case DISCONNECT:
                     // may be close the streams first
