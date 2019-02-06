@@ -9,18 +9,21 @@ public class SudoSession {
 
     private final String id;
     private final String[] command;
-    private final long creationTime;
-    private final CommandSender sender;
+    private boolean isAuthenticated = false;
 
-    public SudoSession(String[] command, CommandSender sender) {
+    public SudoSession(String[] command) {
         this.id = generateRandomId();
         this.command = command;
-        this.creationTime = System.currentTimeMillis();
-        this.sender = sender;
     }
 
-    public boolean verifyPassword(String pass) {
-        return Config.getString("sudo_password").equals(pass);
+    public boolean isAuthenticated() {
+        return this.isAuthenticated;
+    }
+
+    public boolean authenticate(String password) {
+        if(Config.getString("sudo_password").equals(password))
+            isAuthenticated = true;
+        return isAuthenticated;
     }
 
     public String getId() {
@@ -29,14 +32,6 @@ public class SudoSession {
 
     public String[] getCommand() {
         return command;
-    }
-
-    public long getCreationTime() {
-        return creationTime;
-    }
-
-    public CommandSender getSender() {
-        return sender;
     }
 
     private String generateRandomId() {

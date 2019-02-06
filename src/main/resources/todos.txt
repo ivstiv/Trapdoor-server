@@ -14,7 +14,7 @@ RC
 ✔✗	- /msg <recipient> <msg>		| Sends a private message across different channels.
 ✔✗	- /r <msg>						| Responds to the last private message.
  ✗	- /file <username>				| Opens a file prompt and sends a file.
- ✗	- /sudo <cmd>					| Grants elevated privileges to execute admin commands.
+✔✗	- /sudo <cmd>					| Grants elevated privileges to execute admin commands.
 ✔✗	- /exit							| Terminates the connection with the client.
 
 Sudo commands:

@@ -8,7 +8,6 @@ import communication.ConnectionRequestHandler;
 import communication.Request;
 import communication.RequestType;
 import core.Console;
-import core.ServerWrapper;
 import core.ServiceLocator;
 import data.DataLoader;
 
@@ -21,7 +20,6 @@ public class SudoCommand implements CommandExecutor {
     public void onCommand(CommandSender sender, String command, String[] args) {
 
         DataLoader dl = ServiceLocator.getService(DataLoader.class);
-        ServerWrapper server = ServiceLocator.getService(ServerWrapper.class);
 
         if(sender instanceof ConnectionRequestHandler) {
             ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
@@ -32,9 +30,7 @@ public class SudoCommand implements CommandExecutor {
                 return;
             }
 
-
-            SudoSession session = new SudoSession(args, sender);
-            server.addSudoSession(session);
+            SudoSession session = client.getClientData().initSudoSession(args);
 
             Stream<String> cmdStream = Arrays.stream(args);
             String cmd = cmdStream.collect(Collectors.joining(" "));

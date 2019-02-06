@@ -44,7 +44,7 @@ public class InfoCommand implements CommandExecutor {
                         targetUser.getClientData().getActiveChannel().getName(),
                         targetUser.getClientData().getBlockedUsernames().size(),
                         blockedList,
-                        "NOT IMPLEMENTED"
+                        targetUser.getClientData().isMuted()
                 );
 
                 // echo the message

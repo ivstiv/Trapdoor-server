@@ -9,6 +9,8 @@ import core.ServerWrapper;
 import core.ServiceLocator;
 import data.DataLoader;
 
+import java.util.Arrays;
+
 public class TellCommand implements CommandExecutor {
     @Override
     public void onCommand(CommandSender sender, String command, String[] args) {
@@ -24,75 +26,75 @@ public class TellCommand implements CommandExecutor {
                 return;
             }
 
+            String recipient = args[0];
+            String[] msg = Arrays.copyOfRange(args, 1, args.length);
+
             //check if there is a client online with that username
             if(server.isUserOnline(args[0])) {
                 ConnectionRequestHandler targetUser = server.getConnectedClients()
                         .stream()
-                        .filter(cl -> cl.getClientData().getUsername().equals(args[0]))
+                        .filter(cl -> cl.getClientData().getUsername().equals(recipient))
                         .findFirst()
                         .get();
 
                 // put together the message
-                StringBuilder msgForClient = new StringBuilder(dl.getMessage("prefix"));
-                for(int i = 1; i < args.length; i++) {
-                    msgForClient.append(args[i]).append(" ");
-                }
+                String msgForClient = buildMessage(dl.getMessage("prefix"), msg);
+                String msgForConsole = buildMessage("", msg);
 
-                StringBuilder msgForConsole = new StringBuilder();
-                for(int i = 1; i < args.length; i++) {
-                    msgForConsole.append(args[i]).append(" ");
-                }
-
-                targetUser.sendServerMessage(msgForClient.toString());
-                console.print("Sending message to "+args[0]+":"+msgForConsole.toString());
+                targetUser.sendServerMessage(msgForClient);
+                console.print("Sending message to "+args[0]+":"+msgForConsole);
             }else{
                 console.print(args[0]+" "+dl.getMessage("offline"));
             }
         }
 
+
+
         if(sender instanceof ConnectionRequestHandler) {
             ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
 
-            // if the try fails -> permission denied
-            try {
-                SudoSession session = server.getSudoSession(client);
-                server.getAllSudoSessions().remove(session);
+            // check if there is a sudo session
+            if(!client.getClientData().hasSudoSession()) {
+                client.sendServerMessage(dl.getMessage("invalid-sudo-session"));
+                return;
+            }
 
+            SudoSession session = client.getClientData().getSudoSession();
 
-                if (args.length < 2) {
-                    client.sendServerMessage(dl.getMessage("missing-argument"));
-                    return;
-                }
-
-                //check if there is a client online with that username
-                if(server.isUserOnline(args[0])) {
-                    ConnectionRequestHandler targetUser = server.getConnectedClients()
-                            .stream()
-                            .filter(cl -> cl.getClientData().getUsername().equals(args[0]))
-                            .findFirst()
-                            .get();
-
-                    // put together the message
-                    StringBuilder msgForClient = new StringBuilder(dl.getMessage("prefix"));
-                    for(int i = 1; i < args.length; i++) {
-                        msgForClient.append(args[i]).append(" ");
-                    }
-
-                    StringBuilder msgForConsole = new StringBuilder();
-                    for(int i = 1; i < args.length; i++) {
-                        msgForConsole.append(args[i]).append(" ");
-                    }
-
-                    targetUser.sendServerMessage(msgForClient.toString());
-                    client.sendServerMessage(dl.getMessage("prefix")+"Sending message to "+args[0]+":"+msgForConsole.toString());
-                }else{
-                    String msg = String.format("%s%s %s",
-                            dl.getMessage("prefix"), args[0], dl.getMessage("offline"));
-                    client.sendServerMessage(msg);
-                }
-
-            } catch (Exception e) {
+            // check if it is authenticated
+            if(!session.isAuthenticated()) {
                 client.sendServerMessage(dl.getMessage("perm-denied"));
+                client.getClientData().destroySudoSession();
+                return;
+            }
+
+            // check for arguments
+            if(args.length < 2) {
+                client.sendServerMessage(dl.getMessage("missing-argument"));
+                return;
+            }
+
+            String recipient = args[0];
+            String[] msg = Arrays.copyOfRange(args, 1, args.length);
+
+            //check if there is a client online with that username
+            if(server.isUserOnline(args[0])) {
+                ConnectionRequestHandler targetUser = server.getConnectedClients()
+                        .stream()
+                        .filter(cl -> cl.getClientData().getUsername().equals(recipient))
+                        .findFirst()
+                        .get();
+
+                // put together the message
+                String msgForClient = buildMessage(dl.getMessage("prefix"), msg);
+                String msgForConsole = buildMessage("", msg);
+
+                targetUser.sendServerMessage(msgForClient);
+                client.sendServerMessage(dl.getMessage("prefix")+"Sending message to "+recipient+":"+msgForConsole);
+            }else{
+                String offlineResponse = String.format("%s%s %s",
+                        dl.getMessage("prefix"), args[0], dl.getMessage("offline"));
+                client.sendServerMessage(offlineResponse);
             }
         }
     }

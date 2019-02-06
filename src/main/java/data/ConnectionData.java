@@ -4,6 +4,8 @@ package data;
     Class for encapsulating all data of the client connection.
  */
 
+import commands.SudoSession;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,6 +15,7 @@ public class ConnectionData {
     private String username, ip, lastPrivateSenderUsername = "";
     private Channel activeChannel;
     private Set<String> blockedUsernames = new HashSet<>();
+    private SudoSession sudoSession;
     private boolean muted = false;
 
     public String getUsername() {
@@ -65,5 +68,24 @@ public class ConnectionData {
 
     public boolean isMuted() {
         return muted;
+    }
+
+    public SudoSession initSudoSession(String[] command) {
+        this.sudoSession = new SudoSession(command);
+        return this.sudoSession;
+    }
+
+    public SudoSession getSudoSession() {
+        return this.sudoSession;
+    }
+
+    public boolean hasSudoSession() {
+        if(this.sudoSession != null)
+            return true;
+        return false;
+    }
+
+    public void destroySudoSession() {
+        this.sudoSession = null;
     }
 }
