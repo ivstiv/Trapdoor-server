@@ -26,7 +26,6 @@ public class HelpCommand implements CommandExecutor {
             payload.addProperty("message", dl.getMessage("help"));
             Request response = new Request(RequestType.ACTION, payload);
             client.sendRequest(response);
-            return;
 
         }
 

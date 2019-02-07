@@ -3,6 +3,7 @@ package commands.implementations;
 import com.google.gson.JsonPrimitive;
 import commands.CommandExecutor;
 import commands.CommandSender;
+import commands.SudoSession;
 import communication.ConnectionRequestHandler;
 import core.Console;
 import core.ServerWrapper;
@@ -25,23 +26,56 @@ public class UnbanCommand implements CommandExecutor {
                 return;
             }
 
+            String username = args[0];
+
             // check if the user is banned
-            if(Config.getJsonArray("forbidden_usernames").contains(new JsonPrimitive(args[0]))) {
+            if(Config.getJsonArray("forbidden_usernames").contains(new JsonPrimitive(username))) {
                 // remove the username from the file and config
-                Config.getJsonArray("forbidden_usernames").remove(new JsonPrimitive(args[0]));
+                Config.getJsonArray("forbidden_usernames").remove(new JsonPrimitive(username));
                 Config.updateFile();
                 // echo an answer
-                console.print(args[0]+" "+dl.getMessage("cl-unbanned"));
-                return;
+                console.print(username+" "+dl.getMessage("cl-unbanned"));
             }else{
-                console.print(args[0]+" "+dl.getMessage("cl-not-banned"));
-                return;
+                console.print(username+" "+dl.getMessage("cl-not-banned"));
             }
         }
 
         if(sender instanceof ConnectionRequestHandler) {
             ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
-            client.sendServerMessage("NEEDS SUDO IMPLEMENTATION");
+
+            // check if there is a sudo session
+            if(!client.getClientData().hasSudoSession()) {
+                client.sendServerErrorMessage(dl.getMessage("perm-denied"));
+                return;
+            }
+
+            SudoSession session = client.getClientData().getSudoSession();
+
+            // check if it is authenticated
+            if(!session.isAuthenticated()) {
+                client.sendServerErrorMessage(dl.getMessage("perm-denied"));
+                client.getClientData().destroySudoSession();
+                return;
+            }
+
+            // check for arguments
+            if(args.length < 1) {
+                client.sendServerErrorMessage(dl.getMessage("missing-argument"));
+                return;
+            }
+
+            String username = args[0];
+
+            // check if the user is banned
+            if(Config.getJsonArray("forbidden_usernames").contains(new JsonPrimitive(username))) {
+                // remove the username from the file and config
+                Config.getJsonArray("forbidden_usernames").remove(new JsonPrimitive(username));
+                Config.updateFile();
+                // echo an answer
+                client.sendServerMessage(username+" "+dl.getMessage("cl-unbanned"));
+            }else{
+                client.sendServerErrorMessage(username+" "+dl.getMessage("cl-not-banned"));
+            }
         }
     }
 }

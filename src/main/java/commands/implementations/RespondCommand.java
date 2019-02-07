@@ -25,7 +25,7 @@ public class RespondCommand implements CommandExecutor {
 
             // check if argument exists
             if(args.length < 1) {
-                client.sendServerMessage(dl.getMessage("missing-argument"));
+                client.sendServerErrorMessage(dl.getMessage("missing-argument"));
                 return;
             }
 
@@ -52,16 +52,13 @@ public class RespondCommand implements CommandExecutor {
 
                     }else{
                         // put together the message
-                        StringBuilder msg = new StringBuilder();
-                        for(int i = 0; i < args.length; i++) {
-                            msg.append(args[i]).append(" ");
-                        }
+                        String message = buildMessage("", args);
 
                         // send the message to the receiver
                         JsonObject payload = new JsonObject();
                         payload.addProperty("sender", senderUsername);
                         payload.addProperty("receiver", receiverUsername);
-                        payload.addProperty("message", msg.toString());
+                        payload.addProperty("message", message);
                         Request req = new Request(RequestType.PRIVATE_MSG, payload);
 
                         receiver.sendRequest(req);
@@ -72,17 +69,15 @@ public class RespondCommand implements CommandExecutor {
 
                         //echo to the console
                         if(server.getConsole().getMode().equals("default"))
-                            server.getConsole().print(ANSI.CYAN+senderUsername+" -> "+receiverUsername+":"+msg.toString());
+                            server.getConsole().print(ANSI.CYAN+senderUsername+" -> "+receiverUsername+":"+message);
                     }
                 }else{
                     // recipient is offline
-                    String msg = String.format("%s%s %s",
-                            dl.getMessage("prefix"), args[0], dl.getMessage("offline"));
-                    client.sendServerMessage(msg);
+                    client.sendServerErrorMessage(receiverUsername+" "+dl.getMessage("offline"));
                 }
             }else{
                 // nobody to respond to
-                client.sendServerMessage(dl.getMessage("nobody"));
+                client.sendServerErrorMessage(dl.getMessage("nobody"));
             }
         }
 

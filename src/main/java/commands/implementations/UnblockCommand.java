@@ -21,13 +21,13 @@ public class UnblockCommand implements CommandExecutor {
 
             // check if arguments exists
             if (args.length < 1) {
-                client.sendServerMessage(dl.getMessage("missing-argument"));
+                client.sendServerErrorMessage(dl.getMessage("missing-argument"));
                 return;
             }
 
             //check if the user tries to unblock himself
             if (client.getClientData().getUsername().equals(args[0])) {
-                client.sendServerMessage(dl.getMessage("cant-unblock"));
+                client.sendServerErrorMessage(dl.getMessage("cant-unblock"));
                 return;
             }
 
@@ -36,13 +36,10 @@ public class UnblockCommand implements CommandExecutor {
 
                 // block the username
                 client.getClientData().unblockUsername(args[0]);
-
-                String msg = String.format("%s%s %s",
-                        dl.getMessage("prefix"), args[0], dl.getMessage("success-unblocked"));
-                client.sendServerMessage(msg);
+                client.sendServerMessage(args[0]+" "+dl.getMessage("success-unblocked"));
 
             }else{
-                client.sendServerMessage(dl.getMessage("already-unblocked"));
+                client.sendServerErrorMessage(dl.getMessage("already-unblocked"));
             }
         }
 

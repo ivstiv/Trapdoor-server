@@ -26,7 +26,7 @@ public class JoinCommand implements CommandExecutor {
 
             // check if argument exists
             if(args.length < 1) {
-                client.sendServerMessage(dl.getMessage("missing-argument"));
+                client.sendServerErrorMessage(dl.getMessage("missing-argument"));
                 return;
             }
 
@@ -45,19 +45,16 @@ public class JoinCommand implements CommandExecutor {
                         if(newChannel.getPassword().equals(args[1])) {
                             switchChannel(client, newChannel);
                         }else{
-                            client.sendServerMessage(dl.getMessage("wrong-pass"));
-                            return;
+                            client.sendServerErrorMessage(dl.getMessage("wrong-pass"));
                         }
                     }else{
-                        client.sendServerMessage(dl.getMessage("missing-argument"));
-                        return;
+                        client.sendServerErrorMessage(dl.getMessage("missing-argument"));
                     }
                 }else{
                     switchChannel(client, newChannel);
                 }
             }else{
-                client.sendServerMessage(dl.getMessage("unknown-channel"));
-                return;
+                client.sendServerErrorMessage(dl.getMessage("unknown-channel"));
             }
         }
 
@@ -72,7 +69,7 @@ public class JoinCommand implements CommandExecutor {
 
         // check if the user is not already in this channel
         if(oldChannel.getName().equals(newChannel.getName())) {
-            client.sendServerMessage(dl.getMessage("already-in"));
+            client.sendServerErrorMessage(dl.getMessage("already-in"));
             return;
         }
 

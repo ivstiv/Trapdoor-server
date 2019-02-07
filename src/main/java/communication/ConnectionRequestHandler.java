@@ -72,12 +72,11 @@ public class ConnectionRequestHandler extends ConnectionHandler implements Comma
 
                     /* SUDO CONFIRMATION PASSWORD */
                     if(action.equals("confirm_sudo")) {
-                        String sessionId = r.getContent().get("session_id").getAsString();
                         String password = r.getContent().get("sudo_password").getAsString();
 
                         // check if there is a sudo session
                         if(!getClientData().hasSudoSession()) {
-                            sendServerMessage(dl.getMessage("invalid-sudo-session"));
+                            sendServerErrorMessage(dl.getMessage("invalid-sudo-session"));
                             break;
                         }
 
@@ -85,7 +84,7 @@ public class ConnectionRequestHandler extends ConnectionHandler implements Comma
 
                         // check if password matches
                         if(!session.authenticate(password)) {
-                            sendServerMessage(dl.getMessage("invalid-sudo-pass"));
+                            sendServerErrorMessage(dl.getMessage("invalid-sudo-pass"));
                             getClientData().destroySudoSession();
                             break;
                         }

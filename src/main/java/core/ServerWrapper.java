@@ -37,17 +37,12 @@ public class ServerWrapper extends Thread{
         DataLoader dl = ServiceLocator.getService(DataLoader.class);
 
         if(!commandRegister.dispatch(cmd)) {  // return false if the command is not registered
+
             if(sender instanceof ConnectionRequestHandler) {
-
                 ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
-
-                JsonObject payload = new JsonObject();
-                payload.addProperty("action", "print");
-                payload.addProperty("message", dl.getMessage("unknown-command"));
-                Request req = new Request(RequestType.ACTION, payload);
-                client.sendRequest(req);
-                return;
+                client.sendServerErrorMessage(dl.getMessage("unknown-command"));
             }
+
             if(sender instanceof  Console) {
                 console.print(dl.getMessage("cl-unknown-cmd"));
             }

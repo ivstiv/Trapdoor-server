@@ -30,7 +30,7 @@ public class TellCommand implements CommandExecutor {
             String[] msg = Arrays.copyOfRange(args, 1, args.length);
 
             //check if there is a client online with that username
-            if(server.isUserOnline(args[0])) {
+            if(server.isUserOnline(recipient)) {
                 ConnectionRequestHandler targetUser = server.getConnectedClients()
                         .stream()
                         .filter(cl -> cl.getClientData().getUsername().equals(recipient))
@@ -38,13 +38,13 @@ public class TellCommand implements CommandExecutor {
                         .get();
 
                 // put together the message
-                String msgForClient = buildMessage(dl.getMessage("prefix"), msg);
+                String msgForClient = buildMessage("", msg);
                 String msgForConsole = buildMessage("", msg);
 
                 targetUser.sendServerMessage(msgForClient);
-                console.print("Sending message to "+args[0]+":"+msgForConsole);
+                console.print(dl.getMessage("sending-msg")+recipient+":"+msgForConsole);
             }else{
-                console.print(args[0]+" "+dl.getMessage("offline"));
+                console.print(recipient+" "+dl.getMessage("offline"));
             }
         }
 
@@ -55,7 +55,7 @@ public class TellCommand implements CommandExecutor {
 
             // check if there is a sudo session
             if(!client.getClientData().hasSudoSession()) {
-                client.sendServerMessage(dl.getMessage("invalid-sudo-session"));
+                client.sendServerErrorMessage(dl.getMessage("perm-denied"));
                 return;
             }
 
@@ -63,14 +63,14 @@ public class TellCommand implements CommandExecutor {
 
             // check if it is authenticated
             if(!session.isAuthenticated()) {
-                client.sendServerMessage(dl.getMessage("perm-denied"));
+                client.sendServerErrorMessage(dl.getMessage("perm-denied"));
                 client.getClientData().destroySudoSession();
                 return;
             }
 
             // check for arguments
             if(args.length < 2) {
-                client.sendServerMessage(dl.getMessage("missing-argument"));
+                client.sendServerErrorMessage(dl.getMessage("missing-argument"));
                 return;
             }
 
@@ -86,15 +86,13 @@ public class TellCommand implements CommandExecutor {
                         .get();
 
                 // put together the message
-                String msgForClient = buildMessage(dl.getMessage("prefix"), msg);
-                String msgForConsole = buildMessage("", msg);
+                String msgForRecipient = buildMessage("", msg);
+                String msgForSender = buildMessage("", msg);
 
-                targetUser.sendServerMessage(msgForClient);
-                client.sendServerMessage(dl.getMessage("prefix")+"Sending message to "+recipient+":"+msgForConsole);
+                targetUser.sendServerMessage(msgForRecipient);
+                client.sendServerMessage(dl.getMessage("sending-msg")+recipient+":"+msgForSender);
             }else{
-                String offlineResponse = String.format("%s%s %s",
-                        dl.getMessage("prefix"), args[0], dl.getMessage("offline"));
-                client.sendServerMessage(offlineResponse);
+                client.sendServerErrorMessage(recipient+" "+dl.getMessage("offline"));
             }
         }
     }

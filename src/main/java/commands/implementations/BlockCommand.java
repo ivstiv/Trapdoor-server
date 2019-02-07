@@ -23,13 +23,13 @@ public class BlockCommand implements CommandExecutor {
 
             // check if arguments exists
             if(args.length < 1) {
-                client.sendServerMessage(dl.getMessage("missing-argument"));
+                client.sendServerErrorMessage(dl.getMessage("missing-argument"));
                 return;
             }
 
             //check if the user tries to block himself
             if(client.getClientData().getUsername().equals(args[0])) {
-                client.sendServerMessage(dl.getMessage("cant-block"));
+                client.sendServerErrorMessage(dl.getMessage("cant-block"));
                 return;
             }
 
@@ -42,16 +42,12 @@ public class BlockCommand implements CommandExecutor {
                     // block the username
                     client.getClientData().blockUsername(args[0]);
 
-                    String msg = String.format("%s%s %s",
-                            dl.getMessage("prefix"), args[0], dl.getMessage("success-blocked"));
-                    client.sendServerMessage(msg);
+                    client.sendServerMessage(args[0]+" "+dl.getMessage("success-blocked"));
                 }else{
-                    client.sendServerMessage(dl.getMessage("already-blocked"));
+                    client.sendServerErrorMessage(dl.getMessage("already-blocked"));
                 }
             }else{
-                String msg = String.format("%s%s %s",
-                        dl.getMessage("prefix"), args[0], dl.getMessage("offline"));
-                client.sendServerMessage(msg);
+                client.sendServerErrorMessage(args[0]+" "+dl.getMessage("offline"));
             }
         }
 

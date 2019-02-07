@@ -134,7 +134,15 @@ public abstract class ConnectionHandler extends Thread{
     public void sendServerMessage(String msg) {
         JsonObject payload = new JsonObject();
         payload.addProperty("action", "print");
-        payload.addProperty("message", msg);
+        payload.addProperty("message", dl.getMessage("prefix")+msg);
+        Request response = new Request(RequestType.ACTION, payload);
+        sendRequest(response);
+    }
+
+    public void sendServerErrorMessage(String msg) {
+        JsonObject payload = new JsonObject();
+        payload.addProperty("action", "print");
+        payload.addProperty("message", dl.getMessage("error-prefix")+msg);
         Request response = new Request(RequestType.ACTION, payload);
         sendRequest(response);
     }

@@ -26,7 +26,7 @@ public class SudoCommand implements CommandExecutor {
 
             // check if arguments exists
             if(args.length < 1) {
-                client.sendServerMessage(dl.getMessage("missing-argument"));
+                client.sendServerErrorMessage(dl.getMessage("missing-argument"));
                 return;
             }
 

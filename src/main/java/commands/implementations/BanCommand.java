@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import commands.CommandExecutor;
 import commands.CommandSender;
+import commands.SudoSession;
 import communication.ConnectionRequestHandler;
 import core.Console;
 import core.ServerWrapper;
@@ -26,37 +27,80 @@ public class BanCommand implements CommandExecutor {
                 return;
             }
 
+            String username = args[0];
+
             // add the username to forbidden usernames
-            if(!Config.getJsonArray("forbidden_usernames").contains(new JsonPrimitive(args[0]))) {
+            if(!Config.getJsonArray("forbidden_usernames").contains(new JsonPrimitive(username))) {
                 // add the name to the list
-                Config.getJsonArray("forbidden_usernames").add(args[0]);
+                Config.getJsonArray("forbidden_usernames").add(username);
                 Config.updateFile();
 
                 //check if there is a client online with that username and kick it
                 if(server.isUserOnline(args[0])) {
                     ConnectionRequestHandler targetUser = server.getConnectedClients()
                             .stream()
-                            .filter(cl -> cl.getClientData().getUsername().equals(args[0]))
+                            .filter(cl -> cl.getClientData().getUsername().equals(username))
                             .findFirst()
                             .get();
 
-                    targetUser.sendServerMessage(dl.getMessage("banned"));
+                    targetUser.sendServerErrorMessage(dl.getMessage("banned"));
                     targetUser.stopConnection();
                 }
 
-                console.print(args[0]+" "+dl.getMessage("cl-banned"));
-                return;
-
+                console.print(username+" "+dl.getMessage("cl-banned"));
             }else{
-                console.print(args[0]+" "+dl.getMessage("cl-already-banned"));
-                return;
+                console.print(username+" "+dl.getMessage("cl-already-banned"));
             }
-
         }
 
         if(sender instanceof ConnectionRequestHandler) {
             ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
-            client.sendServerMessage("NEEDS SUDO IMPLEMENTATION");
+
+            // check if there is a sudo session
+            if(!client.getClientData().hasSudoSession()) {
+                client.sendServerErrorMessage(dl.getMessage("perm-denied"));
+                return;
+            }
+
+            SudoSession session = client.getClientData().getSudoSession();
+
+            // check if it is authenticated
+            if(!session.isAuthenticated()) {
+                client.sendServerErrorMessage(dl.getMessage("perm-denied"));
+                client.getClientData().destroySudoSession();
+                return;
+            }
+
+            // check for arguments
+            if(args.length < 1) {
+                client.sendServerErrorMessage(dl.getMessage("missing-argument"));
+                return;
+            }
+
+            String username = args[0];
+
+            // add the username to forbidden usernames
+            if(!Config.getJsonArray("forbidden_usernames").contains(new JsonPrimitive(username))) {
+                // add the name to the list
+                Config.getJsonArray("forbidden_usernames").add(username);
+                Config.updateFile();
+
+                //check if there is a client online with that username and kick it
+                if(server.isUserOnline(args[0])) {
+                    ConnectionRequestHandler targetUser = server.getConnectedClients()
+                            .stream()
+                            .filter(cl -> cl.getClientData().getUsername().equals(username))
+                            .findFirst()
+                            .get();
+
+                    targetUser.sendServerErrorMessage(dl.getMessage("banned"));
+                    targetUser.stopConnection();
+                }
+
+                client.sendServerMessage(username+" "+dl.getMessage("cl-banned"));
+            }else{
+                client.sendServerErrorMessage(username+" "+dl.getMessage("cl-already-banned"));
+            }
         }
     }
 }
