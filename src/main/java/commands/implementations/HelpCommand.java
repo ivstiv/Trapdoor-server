@@ -8,7 +8,6 @@ import communication.ConnectionRequestHandler;
 import communication.RequestType;
 import core.Console;
 import core.ServiceLocator;
-import data.ANSI;
 import data.DataLoader;
 
 public class HelpCommand implements CommandExecutor {
