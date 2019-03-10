@@ -1,18 +1,17 @@
 package commands;
 
+import communication.ConnectionRequestHandler;
+
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
-// class that holds all registered commands on load
+// class that holds all registered executors on load
 public class CommandRegister {
 
     private BlockingQueue<Command> dispatchedCommands = new LinkedBlockingDeque<>();
-    private HashMap<String, CommandExecutor> commands = new HashMap<>();
+    private HashMap<String, CommandExecutor> executors = new HashMap<>();
     private Thread commandListener;
     private volatile boolean running = true;
 
@@ -26,19 +25,19 @@ public class CommandRegister {
     }
 
     public void registerCommand(String command, CommandExecutor executor) {
-        commands.put(command, executor);
+        executors.put(command, executor);
     }
     public void unregisterCommand(String command) {
-        commands.remove(command);
+        executors.remove(command);
     }
 
     public Set<String> registeredCommands() {
-        return commands.keySet();
+        return executors.keySet();
     }
 
     //return true if the command exists
     public boolean dispatch(Command cmd) {
-        if(commands.containsKey(cmd.getName())) {
+        if(executors.containsKey(cmd.getName())) {
             dispatchedCommands.add(cmd);
             return true;
         }else{
@@ -51,7 +50,15 @@ public class CommandRegister {
             while(running) {
                 try {
                     Command cmd = dispatchedCommands.take();
-                    commands.get(cmd.getName()).onCommand(cmd.getSender(), cmd.getName(), cmd.getArgs());
+                    executors.get(cmd.getName()).onCommand(cmd.getSender(), cmd.getName(), cmd.getArgs());
+
+                    if(cmd.getName().equals("sudo")) continue; // do not delete the sudo session after a /sudo command
+                    if(cmd.getSender() instanceof ConnectionRequestHandler) {
+                        ConnectionRequestHandler client = (ConnectionRequestHandler) cmd.getSender();
+                        // clean the sudo session
+                        if(client.getClientData().hasSudoSession())
+                            client.getClientData().destroySudoSession();
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

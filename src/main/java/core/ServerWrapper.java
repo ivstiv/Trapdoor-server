@@ -41,6 +41,9 @@ public class ServerWrapper extends Thread{
             if(sender instanceof ConnectionRequestHandler) {
                 ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
                 client.sendServerErrorMessage(dl.getMessage("unknown-command"));
+                // clean the sudo session
+                if(client.getClientData().hasSudoSession())
+                    client.getClientData().destroySudoSession();
             }
 
             if(sender instanceof  Console) {
