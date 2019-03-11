@@ -4,8 +4,9 @@ import com.google.gson.JsonObject;
 import commands.CommandExecutor;
 import commands.CommandSender;
 import communication.Request;
-import communication.ConnectionRequestHandler;
+import communication.ConnectionHandler;
 import communication.RequestType;
+import communication.handlers.RequestHandler;
 import core.Console;
 import core.ServerWrapper;
 import core.ServiceLocator;
@@ -17,28 +18,26 @@ public class OnlineCommand implements CommandExecutor {
         ServerWrapper server = ServiceLocator.getService(ServerWrapper.class);
 
 
-        if (sender instanceof ConnectionRequestHandler) {
-            ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
+        if(sender instanceof RequestHandler) {
+            RequestHandler handler = (RequestHandler) sender;
+            ConnectionHandler client = handler.getClient();
 
             int users = server.getConnectedClients().size();
 
             StringBuilder usersText = new StringBuilder("~1~dOnline users ("+users+"):~g");
-            for(ConnectionRequestHandler cl : server.getConnectedClients()) {
+            for(ConnectionHandler cl : server.getConnectedClients()) {
                 String entry = String.format("[%s] %s, ",
                         cl.getClientData().getActiveChannel().getName(), cl.getClientData().getUsername());
                 usersText.append(entry);
             }
-            JsonObject payload = new JsonObject();
-            payload.addProperty("action", "print");
-            payload.addProperty("message", usersText.toString());
-            client.sendRequest(new Request(RequestType.ACTION, payload));
-            return;
+
+            client.sendMessage(usersText.toString());
         }
 
         if(sender instanceof Console) {
             int users = server.getConnectedClients().size();
             StringBuilder usersText = new StringBuilder("Online users ("+users+"):");
-            for(ConnectionRequestHandler cl : server.getConnectedClients()) {
+            for(ConnectionHandler cl : server.getConnectedClients()) {
                 String entry = String.format("[%s] %s, ",
                         cl.getClientData().getActiveChannel().getName(), cl.getClientData().getUsername());
                 usersText.append(entry);

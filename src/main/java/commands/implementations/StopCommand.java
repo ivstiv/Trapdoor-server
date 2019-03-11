@@ -2,7 +2,8 @@ package commands.implementations;
 
 import commands.CommandExecutor;
 import commands.CommandSender;
-import communication.ConnectionRequestHandler;
+import communication.ConnectionHandler;
+import communication.handlers.RequestHandler;
 import core.Console;
 import core.ServerWrapper;
 import core.ServiceLocator;
@@ -15,14 +16,14 @@ public class StopCommand implements CommandExecutor {
         if(sender instanceof Console) {
             ServerWrapper server = ServiceLocator.getService(ServerWrapper.class);
             server.stopServer();
-            return;
         }
 
-        if(sender instanceof ConnectionRequestHandler) {
+        if(sender instanceof RequestHandler) {
+            RequestHandler handler = (RequestHandler) sender;
+            ConnectionHandler client = handler.getClient();
             DataLoader dl = ServiceLocator.getService(DataLoader.class);
-            ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
 
-            client.sendServerMessage(dl.getMessage("unknown-command"));
+            client.sendPrefixedMessage(dl.getMessage("unknown-command"));
         }
     }
 }

@@ -4,8 +4,9 @@ import com.google.gson.JsonObject;
 import commands.CommandExecutor;
 import commands.CommandSender;
 import communication.Request;
-import communication.ConnectionRequestHandler;
+import communication.ConnectionHandler;
 import communication.RequestType;
+import communication.handlers.RequestHandler;
 import core.Console;
 import core.ServerWrapper;
 import core.ServiceLocator;
@@ -21,12 +22,13 @@ public class JoinCommand implements CommandExecutor {
     @Override
     public void onCommand(CommandSender sender, String command, String[] args) {
 
-        if(sender instanceof ConnectionRequestHandler) {
-            ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
+        if(sender instanceof RequestHandler) {
+            RequestHandler handler = (RequestHandler) sender;
+            ConnectionHandler client = handler.getClient();
 
             // check if argument exists
             if(args.length < 1) {
-                client.sendServerErrorMessage(dl.getMessage("missing-argument"));
+                client.sendPrefixedErrorMessage(dl.getMessage("missing-argument"));
                 return;
             }
 
@@ -45,16 +47,16 @@ public class JoinCommand implements CommandExecutor {
                         if(newChannel.getPassword().equals(args[1])) {
                             switchChannel(client, newChannel);
                         }else{
-                            client.sendServerErrorMessage(dl.getMessage("wrong-pass"));
+                            client.sendPrefixedErrorMessage(dl.getMessage("wrong-pass"));
                         }
                     }else{
-                        client.sendServerErrorMessage(dl.getMessage("missing-argument"));
+                        client.sendPrefixedErrorMessage(dl.getMessage("missing-argument"));
                     }
                 }else{
                     switchChannel(client, newChannel);
                 }
             }else{
-                client.sendServerErrorMessage(dl.getMessage("unknown-channel"));
+                client.sendPrefixedErrorMessage(dl.getMessage("unknown-channel"));
             }
         }
 
@@ -64,12 +66,12 @@ public class JoinCommand implements CommandExecutor {
     }
 
     // when we have multiple command senders just overload the method
-    private void switchChannel(ConnectionRequestHandler client, Channel newChannel) {
+    private void switchChannel(ConnectionHandler client, Channel newChannel) {
         Channel oldChannel = client.getClientData().getActiveChannel();
 
         // check if the user is not already in this channel
         if(oldChannel.getName().equals(newChannel.getName())) {
-            client.sendServerErrorMessage(dl.getMessage("already-in"));
+            client.sendPrefixedErrorMessage(dl.getMessage("already-in"));
             return;
         }
 

@@ -4,7 +4,8 @@ import com.google.gson.JsonPrimitive;
 import commands.CommandExecutor;
 import commands.CommandSender;
 import commands.SudoSession;
-import communication.ConnectionRequestHandler;
+import communication.ConnectionHandler;
+import communication.handlers.RequestHandler;
 import core.Console;
 import core.ServerWrapper;
 import core.ServiceLocator;
@@ -37,14 +38,14 @@ public class IpbanCommand implements CommandExecutor {
                 Config.updateFile();
 
                 // check if there is a connected client with that ip and kick it
-                Optional<ConnectionRequestHandler> targetUser = server.getConnectedClients()
+                Optional<ConnectionHandler> targetUser = server.getConnectedClients()
                         .stream()
                         .filter(cl -> cl.getClientData().getIp().equals(ip))
                         .findFirst();
 
                 // kick the user if online
                 if(targetUser.isPresent()) {
-                    targetUser.get().sendServerErrorMessage(dl.getMessage("banned"));
+                    targetUser.get().sendPrefixedErrorMessage(dl.getMessage("banned"));
                     targetUser.get().stopConnection();
                 }
 
@@ -54,12 +55,13 @@ public class IpbanCommand implements CommandExecutor {
             }
         }
 
-        if(sender instanceof ConnectionRequestHandler) {
-            ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
+        if(sender instanceof RequestHandler) {
+            RequestHandler handler = (RequestHandler) sender;
+            ConnectionHandler client = handler.getClient();
 
             // check if there is a sudo session
             if(!client.getClientData().hasSudoSession()) {
-                client.sendServerErrorMessage(dl.getMessage("perm-denied"));
+                client.sendPrefixedErrorMessage(dl.getMessage("perm-denied"));
                 return;
             }
 
@@ -67,14 +69,14 @@ public class IpbanCommand implements CommandExecutor {
 
             // check if it is authenticated
             if(!session.isAuthenticated()) {
-                client.sendServerErrorMessage(dl.getMessage("perm-denied"));
+                client.sendPrefixedErrorMessage(dl.getMessage("perm-denied"));
                 client.getClientData().destroySudoSession();
                 return;
             }
 
             // check for arguments
             if(args.length < 1) {
-                client.sendServerErrorMessage(dl.getMessage("missing-argument"));
+                client.sendPrefixedErrorMessage(dl.getMessage("missing-argument"));
                 return;
             }
 
@@ -87,18 +89,18 @@ public class IpbanCommand implements CommandExecutor {
                 Config.updateFile();
 
                 // check if there is a connected client with that ip and kick it
-                Optional<ConnectionRequestHandler> targetUser = server.getConnectedClients()
+                Optional<ConnectionHandler> targetUser = server.getConnectedClients()
                         .stream()
                         .filter(cl -> cl.getClientData().getIp().equals(ip))
                         .findFirst();
 
                 // kick the user if online
                 if(targetUser.isPresent()) {
-                    targetUser.get().sendServerErrorMessage(dl.getMessage("banned"));
+                    targetUser.get().sendPrefixedErrorMessage(dl.getMessage("banned"));
                     targetUser.get().stopConnection();
                 }
             }else{
-                client.sendServerErrorMessage(ip+" "+dl.getMessage("cl-already-banned"));
+                client.sendPrefixedErrorMessage(ip+" "+dl.getMessage("cl-already-banned"));
             }
         }
     }

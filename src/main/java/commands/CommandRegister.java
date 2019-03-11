@@ -1,6 +1,7 @@
 package commands;
 
-import communication.ConnectionRequestHandler;
+import communication.ConnectionHandler;
+import communication.handlers.RequestHandler;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -51,10 +52,10 @@ public class CommandRegister {
                 try {
                     Command cmd = dispatchedCommands.take();
                     executors.get(cmd.getName()).onCommand(cmd.getSender(), cmd.getName(), cmd.getArgs());
-
                     if(cmd.getName().equals("sudo")) continue; // do not delete the sudo session after a /sudo command
-                    if(cmd.getSender() instanceof ConnectionRequestHandler) {
-                        ConnectionRequestHandler client = (ConnectionRequestHandler) cmd.getSender();
+                    if(cmd.getSender() instanceof RequestHandler) {
+                        RequestHandler handler = (RequestHandler) cmd.getSender();
+                        ConnectionHandler client = handler.getClient();
                         // clean the sudo session
                         if(client.getClientData().hasSudoSession())
                             client.getClientData().destroySudoSession();

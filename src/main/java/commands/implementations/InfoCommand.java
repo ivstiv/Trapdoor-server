@@ -3,7 +3,8 @@ package commands.implementations;
 import commands.CommandExecutor;
 import commands.CommandSender;
 import commands.SudoSession;
-import communication.ConnectionRequestHandler;
+import communication.ConnectionHandler;
+import communication.handlers.RequestHandler;
 import core.Console;
 import core.ServerWrapper;
 import core.ServiceLocator;
@@ -31,7 +32,7 @@ public class InfoCommand implements CommandExecutor {
             // check if the supplied username is online
             if(server.isUserOnline(username)) {
                 // find the connection handler with that username
-                ConnectionRequestHandler targetUser = server.getConnectedClients()
+                ConnectionHandler targetUser = server.getConnectedClients()
                         .stream()
                         .filter(cl -> cl.getClientData().getUsername().equals(username))
                         .findFirst()
@@ -57,12 +58,13 @@ public class InfoCommand implements CommandExecutor {
             }
         }
 
-        if(sender instanceof ConnectionRequestHandler) {
-            ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
+        if(sender instanceof RequestHandler) {
+            RequestHandler handler = (RequestHandler) sender;
+            ConnectionHandler client = handler.getClient();
 
             // check if there is a sudo session
             if(!client.getClientData().hasSudoSession()) {
-                client.sendServerErrorMessage(dl.getMessage("perm-denied"));
+                client.sendPrefixedErrorMessage(dl.getMessage("perm-denied"));
                 return;
             }
 
@@ -70,14 +72,14 @@ public class InfoCommand implements CommandExecutor {
 
             // check if it is authenticated
             if(!session.isAuthenticated()) {
-                client.sendServerErrorMessage(dl.getMessage("perm-denied"));
+                client.sendPrefixedErrorMessage(dl.getMessage("perm-denied"));
                 client.getClientData().destroySudoSession();
                 return;
             }
 
             // check for arguments
             if(args.length < 1) {
-                client.sendServerErrorMessage(dl.getMessage("missing-argument"));
+                client.sendPrefixedErrorMessage(dl.getMessage("missing-argument"));
                 return;
             }
 
@@ -86,7 +88,7 @@ public class InfoCommand implements CommandExecutor {
             // check if the supplied username is online
             if(server.isUserOnline(username)) {
                 // find the connection handler with that username
-                ConnectionRequestHandler targetUser = server.getConnectedClients()
+                ConnectionHandler targetUser = server.getConnectedClients()
                         .stream()
                         .filter(cl -> cl.getClientData().getUsername().equals(username))
                         .findFirst()
@@ -106,10 +108,10 @@ public class InfoCommand implements CommandExecutor {
                 );
 
                 // echo the message
-                client.sendServerMessage(msg);
+                client.sendPrefixedMessage(msg);
 
             }else{
-                client.sendServerErrorMessage(username+" "+dl.getMessage("offline"));
+                client.sendPrefixedErrorMessage(username+" "+dl.getMessage("offline"));
             }
         }
     }

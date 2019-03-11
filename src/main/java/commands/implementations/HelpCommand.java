@@ -4,8 +4,9 @@ import com.google.gson.JsonObject;
 import commands.CommandExecutor;
 import commands.CommandSender;
 import communication.Request;
-import communication.ConnectionRequestHandler;
+import communication.ConnectionHandler;
 import communication.RequestType;
+import communication.handlers.RequestHandler;
 import core.Console;
 import core.ServiceLocator;
 import data.DataLoader;
@@ -17,15 +18,10 @@ public class HelpCommand implements CommandExecutor {
 
         DataLoader dl = ServiceLocator.getService(DataLoader.class);
 
-        if(sender instanceof ConnectionRequestHandler) {
-            ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
-
-            JsonObject payload = new JsonObject();
-            payload.addProperty("action", "print");
-            payload.addProperty("message", dl.getMessage("help"));
-            Request response = new Request(RequestType.ACTION, payload);
-            client.sendRequest(response);
-
+        if(sender instanceof RequestHandler) {
+            RequestHandler handler = (RequestHandler) sender;
+            ConnectionHandler client = handler.getClient();
+            client.sendMessage(dl.getMessage("help"));
         }
 
         if(sender instanceof Console) {

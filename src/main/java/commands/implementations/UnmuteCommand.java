@@ -3,7 +3,8 @@ package commands.implementations;
 import commands.CommandExecutor;
 import commands.CommandSender;
 import commands.SudoSession;
-import communication.ConnectionRequestHandler;
+import communication.ConnectionHandler;
+import communication.handlers.RequestHandler;
 import core.Console;
 import core.ServerWrapper;
 import core.ServiceLocator;
@@ -28,7 +29,7 @@ public class UnmuteCommand implements CommandExecutor {
 
             //check if there is a client online with that username and mute it
             if(server.isUserOnline(username)) {
-                ConnectionRequestHandler targetUser = server.getConnectedClients()
+                ConnectionHandler targetUser = server.getConnectedClients()
                         .stream()
                         .filter(cl -> cl.getClientData().getUsername().equals(username))
                         .findFirst()
@@ -38,7 +39,7 @@ public class UnmuteCommand implements CommandExecutor {
                 // check if the user is muted
                 if(targetUser.getClientData().isMuted()) {
                     // unmute the user
-                    targetUser.sendServerMessage(dl.getMessage("unmuted"));
+                    targetUser.sendPrefixedMessage(dl.getMessage("unmuted"));
                     targetUser.getClientData().setMuted(false);
                     console.print(username+" "+dl.getMessage("cl-unmuted"));
                 }else{
@@ -50,12 +51,13 @@ public class UnmuteCommand implements CommandExecutor {
             }
         }
 
-        if(sender instanceof ConnectionRequestHandler) {
-            ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
+        if(sender instanceof RequestHandler) {
+            RequestHandler handler = (RequestHandler) sender;
+            ConnectionHandler client = handler.getClient();
 
             // check if there is a sudo session
             if(!client.getClientData().hasSudoSession()) {
-                client.sendServerErrorMessage(dl.getMessage("perm-denied"));
+                client.sendPrefixedErrorMessage(dl.getMessage("perm-denied"));
                 return;
             }
 
@@ -63,14 +65,14 @@ public class UnmuteCommand implements CommandExecutor {
 
             // check if it is authenticated
             if(!session.isAuthenticated()) {
-                client.sendServerErrorMessage(dl.getMessage("perm-denied"));
+                client.sendPrefixedErrorMessage(dl.getMessage("perm-denied"));
                 client.getClientData().destroySudoSession();
                 return;
             }
 
             // check for arguments
             if(args.length < 1) {
-                client.sendServerErrorMessage(dl.getMessage("missing-argument"));
+                client.sendPrefixedErrorMessage(dl.getMessage("missing-argument"));
                 return;
             }
 
@@ -78,7 +80,7 @@ public class UnmuteCommand implements CommandExecutor {
 
             //check if there is a client online with that username and mute it
             if(server.isUserOnline(username)) {
-                ConnectionRequestHandler targetUser = server.getConnectedClients()
+                ConnectionHandler targetUser = server.getConnectedClients()
                         .stream()
                         .filter(cl -> cl.getClientData().getUsername().equals(username))
                         .findFirst()
@@ -88,15 +90,15 @@ public class UnmuteCommand implements CommandExecutor {
                 // check if the user is muted
                 if(targetUser.getClientData().isMuted()) {
                     // unmute the user
-                    targetUser.sendServerMessage(dl.getMessage("unmuted"));
+                    targetUser.sendPrefixedMessage(dl.getMessage("unmuted"));
                     targetUser.getClientData().setMuted(false);
-                    client.sendServerMessage(username+" "+dl.getMessage("unmuted-confirm"));
+                    client.sendPrefixedMessage(username+" "+dl.getMessage("unmuted-confirm"));
                 }else{
-                    client.sendServerErrorMessage(username+" "+dl.getMessage("not-muted"));
+                    client.sendPrefixedErrorMessage(username+" "+dl.getMessage("not-muted"));
                 }
 
             }else{
-                client.sendServerErrorMessage(username+" "+dl.getMessage("offline"));
+                client.sendPrefixedErrorMessage(username+" "+dl.getMessage("offline"));
             }
         }
     }

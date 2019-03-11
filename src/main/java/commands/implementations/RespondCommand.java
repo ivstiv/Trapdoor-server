@@ -3,9 +3,10 @@ package commands.implementations;
 import com.google.gson.JsonObject;
 import commands.CommandExecutor;
 import commands.CommandSender;
-import communication.ConnectionRequestHandler;
+import communication.ConnectionHandler;
 import communication.Request;
 import communication.RequestType;
+import communication.handlers.RequestHandler;
 import core.Console;
 import core.ServerWrapper;
 import core.ServiceLocator;
@@ -20,12 +21,13 @@ public class RespondCommand implements CommandExecutor {
         ServerWrapper server = ServiceLocator.getService(ServerWrapper.class);
         DataLoader dl = ServiceLocator.getService(DataLoader.class);
 
-        if (sender instanceof ConnectionRequestHandler) {
-            ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
+        if(sender instanceof RequestHandler) {
+            RequestHandler handler = (RequestHandler) sender;
+            ConnectionHandler client = handler.getClient();
 
             // check if argument exists
             if(args.length < 1) {
-                client.sendServerErrorMessage(dl.getMessage("missing-argument"));
+                client.sendPrefixedErrorMessage(dl.getMessage("missing-argument"));
                 return;
             }
 
@@ -39,7 +41,7 @@ public class RespondCommand implements CommandExecutor {
                 // check if the receiver is online
                 if(server.isUserOnline(receiverUsername)) {
 
-                    ConnectionRequestHandler receiver = server.getConnectedClients()
+                    ConnectionHandler receiver = server.getConnectedClients()
                             .stream()
                             .filter(cl -> cl.getClientData().getUsername().equals(receiverUsername))
                             .findFirst()
@@ -48,7 +50,7 @@ public class RespondCommand implements CommandExecutor {
                     // check if receiver has blocked the sender
                     if(receiver.getClientData().getBlockedUsernames().contains(senderUsername)) {
                         // notify the sender that he can't send messages to the receiver
-                        client.sendServerMessage(dl.getMessage("cant-send"));
+                        client.sendPrefixedMessage(dl.getMessage("cant-send"));
 
                     }else{
                         // put together the message
@@ -73,11 +75,11 @@ public class RespondCommand implements CommandExecutor {
                     }
                 }else{
                     // recipient is offline
-                    client.sendServerErrorMessage(receiverUsername+" "+dl.getMessage("offline"));
+                    client.sendPrefixedErrorMessage(receiverUsername+" "+dl.getMessage("offline"));
                 }
             }else{
                 // nobody to respond to
-                client.sendServerErrorMessage(dl.getMessage("nobody"));
+                client.sendPrefixedErrorMessage(dl.getMessage("nobody"));
             }
         }
 

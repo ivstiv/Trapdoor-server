@@ -2,13 +2,11 @@ package core;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import commands.*;
 import commands.implementations.*;
-import communication.Request;
-import communication.ConnectionRequestHandler;
-import communication.RequestType;
+import communication.ConnectionHandler;
+import communication.handlers.RequestHandler;
 import data.*;
 
 import java.io.IOException;
@@ -20,77 +18,13 @@ import java.util.function.Predicate;
 public class ServerWrapper extends Thread{
 
     private List<Channel> channels;
-    private Set<ConnectionRequestHandler> connectedClients = new HashSet<>();   // holds all connections that have established RSA tunnel
-    private Set<ConnectionRequestHandler> preAuthClients = new HashSet<>();     // holds all connections that haven't established RSA tunnel
+    private Set<ConnectionHandler> connectedClients = new HashSet<>();   // holds all connections that have established RSA tunnel
+    private Set<ConnectionHandler> preAuthClients = new HashSet<>();     // holds all connections that haven't established RSA tunnel
     private CommandRegister commandRegister;
     private Console console = new Console(this);
     private volatile boolean running = true;
     private ServerSocket ss;
 
-    public Console getConsole() {
-        return console;
-    }
-
-    public void dispatchCommand(CommandSender sender, String name, String[] args) {
-
-        Command cmd = new Command(sender, name, args);
-        DataLoader dl = ServiceLocator.getService(DataLoader.class);
-
-        if(!commandRegister.dispatch(cmd)) {  // return false if the command is not registered
-
-            if(sender instanceof ConnectionRequestHandler) {
-                ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
-                client.sendServerErrorMessage(dl.getMessage("unknown-command"));
-                // clean the sudo session
-                if(client.getClientData().hasSudoSession())
-                    client.getClientData().destroySudoSession();
-            }
-
-            if(sender instanceof  Console) {
-                console.print(dl.getMessage("cl-unknown-cmd"));
-            }
-        }
-
-    }
-
-    public Set<ConnectionRequestHandler> getConnectedClients() {
-        return Collections.unmodifiableSet(connectedClients);
-    }
-
-    public void addConnectedClient(ConnectionRequestHandler r) {
-        connectedClients.add(r);
-        preAuthClients.remove(r);
-    }
-    public void removeConnectedClient(ConnectionRequestHandler r) {
-        connectedClients.remove(r);
-        if(r.getClientData().getActiveChannel() != null)
-            r.getClientData().getActiveChannel().removeClient(r.getClientData().getUsername());
-    }
-
-    public boolean isUserOnline(String username) {
-        Predicate<ConnectionRequestHandler> filter = handler -> handler.getClientData().getUsername().equals(username);
-        return connectedClients.stream().anyMatch(filter);
-    }
-
-    public List<Channel> getChannels() {
-        return Collections.unmodifiableList(channels);
-    }
-
-    public Channel getChannel(ChannelType type) {
-        for(Channel ch : channels) {
-            if(ch.getType().equals(type))
-                return ch;
-        }
-        return null;
-    }
-
-    public Channel getChannel(String name) {
-        for(Channel ch : channels) {
-            if(ch.getName().equals(name))
-                return ch;
-        }
-        return null;
-    }
 
     private void load() {
         console.print("Loading config data. . .");
@@ -160,7 +94,7 @@ public class ServerWrapper extends Thread{
 
             console.print("Connection receiver running on port:"+Config.getInt("port"));
             Socket socket;
-            ConnectionRequestHandler client;
+            ConnectionHandler client;
             while (running) {
                 try {
                     socket = ss.accept();
@@ -180,7 +114,7 @@ public class ServerWrapper extends Thread{
 
                 } else {
 
-                    client = new ConnectionRequestHandler(socket);
+                    client = new ConnectionHandler(socket, this);
                     client.start();
                     preAuthClients.add(client);
 
@@ -203,11 +137,11 @@ public class ServerWrapper extends Thread{
             e.printStackTrace();
         }
         console.print("Stopping pre-auth connections..");
-        for(ConnectionRequestHandler c : preAuthClients) {
+        for(ConnectionHandler c : preAuthClients) {
             c.stopConnection();
         }
         console.print("Disconnecting connected clients..");
-        for(ConnectionRequestHandler c : connectedClients) {
+        for(ConnectionHandler c : connectedClients) {
             c.stopConnection();
         }
         console.print("Stopping command listeners..");
@@ -216,6 +150,72 @@ public class ServerWrapper extends Thread{
         console.print("Stopping terminal interface..");
         console.print("press Enter to continue..");
         console.stopConsole();
+    }
+
+    public void dispatchCommand(CommandSender sender, String name, String[] args) {
+
+        Command cmd = new Command(sender, name, args);
+        DataLoader dl = ServiceLocator.getService(DataLoader.class);
+
+        if(!commandRegister.dispatch(cmd)) {  // return false if the command is not registered
+
+            if(sender instanceof RequestHandler) {
+                RequestHandler handler = (RequestHandler) sender;
+                ConnectionHandler client = handler.getClient();
+                client.sendPrefixedErrorMessage(dl.getMessage("unknown-command"));
+                // clean the sudo session
+                if(client.getClientData().hasSudoSession())
+                    client.getClientData().destroySudoSession();
+            }
+
+            if(sender instanceof  Console) {
+                console.print(dl.getMessage("cl-unknown-cmd"));
+            }
+        }
+
+    }
+
+    public Console getConsole() {
+        return console;
+    }
+
+    public Set<ConnectionHandler> getConnectedClients() {
+        return Collections.unmodifiableSet(connectedClients);
+    }
+
+    public void addConnectedClient(ConnectionHandler r) {
+        connectedClients.add(r);
+        preAuthClients.remove(r);
+    }
+    public void removeConnectedClient(ConnectionHandler r) {
+        connectedClients.remove(r);
+        if(r.getClientData().getActiveChannel() != null)
+            r.getClientData().getActiveChannel().removeClient(r.getClientData().getUsername());
+    }
+
+    public boolean isUserOnline(String username) {
+        Predicate<ConnectionHandler> filter = handler -> handler.getClientData().getUsername().equals(username);
+        return connectedClients.stream().anyMatch(filter);
+    }
+
+    public List<Channel> getChannels() {
+        return Collections.unmodifiableList(channels);
+    }
+
+    public Channel getChannel(ChannelType type) {
+        for(Channel ch : channels) {
+            if(ch.getType().equals(type))
+                return ch;
+        }
+        return null;
+    }
+
+    public Channel getChannel(String name) {
+        for(Channel ch : channels) {
+            if(ch.getName().equals(name))
+                return ch;
+        }
+        return null;
     }
 }
 

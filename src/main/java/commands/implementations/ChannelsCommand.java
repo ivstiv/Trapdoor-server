@@ -4,8 +4,9 @@ import com.google.gson.JsonObject;
 import commands.CommandExecutor;
 import commands.CommandSender;
 import communication.Request;
-import communication.ConnectionRequestHandler;
+import communication.ConnectionHandler;
 import communication.RequestType;
+import communication.handlers.RequestHandler;
 import core.Console;
 import core.ServerWrapper;
 import core.ServiceLocator;
@@ -21,8 +22,9 @@ public class ChannelsCommand implements CommandExecutor {
         DataLoader dl = ServiceLocator.getService(DataLoader.class);
 
 
-        if(sender instanceof ConnectionRequestHandler) {
-            ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
+        if(sender instanceof RequestHandler) {
+            RequestHandler handler = (RequestHandler) sender;
+            ConnectionHandler client = handler.getClient();
 
             StringBuilder channelsText = new StringBuilder(dl.getMessage("available-channels"));
             for(Channel ch : server.getChannels()) {

@@ -4,9 +4,10 @@ import com.google.gson.JsonObject;
 import commands.CommandExecutor;
 import commands.CommandSender;
 import commands.SudoSession;
-import communication.ConnectionRequestHandler;
+import communication.ConnectionHandler;
 import communication.Request;
 import communication.RequestType;
+import communication.handlers.RequestHandler;
 import core.Console;
 import core.ServiceLocator;
 import data.DataLoader;
@@ -21,12 +22,13 @@ public class SudoCommand implements CommandExecutor {
 
         DataLoader dl = ServiceLocator.getService(DataLoader.class);
 
-        if(sender instanceof ConnectionRequestHandler) {
-            ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
+        if(sender instanceof RequestHandler) {
+            RequestHandler handler = (RequestHandler) sender;
+            ConnectionHandler client = handler.getClient();
 
             // check if arguments exists
             if(args.length < 1) {
-                client.sendServerErrorMessage(dl.getMessage("missing-argument"));
+                client.sendPrefixedErrorMessage(dl.getMessage("missing-argument"));
                 return;
             }
 

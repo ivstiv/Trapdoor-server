@@ -4,9 +4,9 @@ import com.google.gson.JsonPrimitive;
 import commands.CommandExecutor;
 import commands.CommandSender;
 import commands.SudoSession;
-import communication.ConnectionRequestHandler;
+import communication.ConnectionHandler;
+import communication.handlers.RequestHandler;
 import core.Console;
-import core.ServerWrapper;
 import core.ServiceLocator;
 import data.Config;
 import data.DataLoader;
@@ -16,7 +16,6 @@ public class UnbanCommand implements CommandExecutor {
     public void onCommand(CommandSender sender, String command, String[] args) {
 
         DataLoader dl = ServiceLocator.getService(DataLoader.class);
-        ServerWrapper server = ServiceLocator.getService(ServerWrapper.class);
 
         if(sender instanceof Console) {
             Console console = (Console) sender;
@@ -40,12 +39,13 @@ public class UnbanCommand implements CommandExecutor {
             }
         }
 
-        if(sender instanceof ConnectionRequestHandler) {
-            ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
+        if(sender instanceof RequestHandler) {
+            RequestHandler handler = (RequestHandler) sender;
+            ConnectionHandler client = handler.getClient();
 
             // check if there is a sudo session
             if(!client.getClientData().hasSudoSession()) {
-                client.sendServerErrorMessage(dl.getMessage("perm-denied"));
+                client.sendPrefixedErrorMessage(dl.getMessage("perm-denied"));
                 return;
             }
 
@@ -53,14 +53,14 @@ public class UnbanCommand implements CommandExecutor {
 
             // check if it is authenticated
             if(!session.isAuthenticated()) {
-                client.sendServerErrorMessage(dl.getMessage("perm-denied"));
+                client.sendPrefixedErrorMessage(dl.getMessage("perm-denied"));
                 client.getClientData().destroySudoSession();
                 return;
             }
 
             // check for arguments
             if(args.length < 1) {
-                client.sendServerErrorMessage(dl.getMessage("missing-argument"));
+                client.sendPrefixedErrorMessage(dl.getMessage("missing-argument"));
                 return;
             }
 
@@ -72,9 +72,9 @@ public class UnbanCommand implements CommandExecutor {
                 Config.getJsonArray("forbidden_usernames").remove(new JsonPrimitive(username));
                 Config.updateFile();
                 // echo an answer
-                client.sendServerMessage(username+" "+dl.getMessage("cl-unbanned"));
+                client.sendPrefixedMessage(username+" "+dl.getMessage("cl-unbanned"));
             }else{
-                client.sendServerErrorMessage(username+" "+dl.getMessage("cl-not-banned"));
+                client.sendPrefixedErrorMessage(username+" "+dl.getMessage("cl-not-banned"));
             }
         }
     }

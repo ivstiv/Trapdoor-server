@@ -4,8 +4,9 @@ import com.google.gson.JsonObject;
 import commands.CommandExecutor;
 import commands.CommandSender;
 import communication.Request;
-import communication.ConnectionRequestHandler;
+import communication.ConnectionHandler;
 import communication.RequestType;
+import communication.handlers.RequestHandler;
 import core.Console;
 import core.ServerWrapper;
 import core.ServiceLocator;
@@ -19,15 +20,11 @@ public class ExitCommand implements CommandExecutor {
         ServerWrapper server = ServiceLocator.getService(ServerWrapper.class);
         DataLoader dl = ServiceLocator.getService(DataLoader.class);
 
-        if(sender instanceof ConnectionRequestHandler) {
+        if(sender instanceof RequestHandler) {
+            RequestHandler handler = (RequestHandler) sender;
+            ConnectionHandler client = handler.getClient();
 
-            ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
-
-            JsonObject payload = new JsonObject();
-            payload.addProperty("action", "print");
-            payload.addProperty("message", dl.getMessage("bye"));
-            Request response = new Request(RequestType.ACTION, payload);
-            client.sendRequest(response);
+            client.sendPrefixedMessage(dl.getMessage("bye"));
 
             JsonObject payload2 = new JsonObject();
             payload2.addProperty("action", "reset_statusbar");

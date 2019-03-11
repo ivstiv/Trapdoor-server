@@ -1,9 +1,10 @@
-package communication;
+/*package communication;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import commands.CommandSender;
 import commands.SudoSession;
+import core.ServerWrapper;
 import data.ANSI;
 import data.Config;
 import data.ChannelType;
@@ -12,10 +13,10 @@ import exceptions.MalformedRequestException;
 import java.net.Socket;
 import java.util.Arrays;
 
-public class ConnectionRequestHandler extends ConnectionHandler implements CommandSender {
+public class ConnectionRequestHandlerOLD /*extends ConnectionHandler implements CommandSender {
 
-    public ConnectionRequestHandler(Socket client) {
-        super(client);
+    public ConnectionRequestHandlerOLD(Socket client, ServerWrapper server) {
+        super(client, server);
     }
 
     @Override
@@ -70,13 +71,13 @@ public class ConnectionRequestHandler extends ConnectionHandler implements Comma
                 case ACTION:
                     String action = r.getContent().get("action").getAsString();
 
-                    /* SUDO CONFIRMATION PASSWORD */
+                    /* SUDO CONFIRMATION PASSWORD
                     if(action.equals("confirm_sudo")) {
                         String password = r.getContent().get("sudo_password").getAsString();
 
                         // check if there is a sudo session
                         if(!getClientData().hasSudoSession()) {
-                            sendServerErrorMessage(dl.getMessage("invalid-sudo-session"));
+                            sendPrefixedErrorMessage(dl.getMessage("invalid-sudo-session"));
                             break;
                         }
 
@@ -84,7 +85,7 @@ public class ConnectionRequestHandler extends ConnectionHandler implements Comma
 
                         // check if password matches
                         if(!session.authenticate(password)) {
-                            sendServerErrorMessage(dl.getMessage("invalid-sudo-pass"));
+                            sendPrefixedErrorMessage(dl.getMessage("invalid-sudo-pass"));
                             getClientData().destroySudoSession();
                             break;
                         }
@@ -133,13 +134,13 @@ public class ConnectionRequestHandler extends ConnectionHandler implements Comma
                                 }
 
                             }else{
-                                sendServerMessage(dl.getMessage("invalid-sudo-pass"));
+                                sendPrefixedMessage(dl.getMessage("invalid-sudo-pass"));
                             }
 
                         } catch (Exception e) {
-                            sendServerMessage(dl.getMessage("invalid-sudo-session"));
+                            sendPrefixedMessage(dl.getMessage("invalid-sudo-session"));
                         }
-                        */
+
                     }
                     break;
                 case DISCONNECT:
@@ -228,3 +229,4 @@ public class ConnectionRequestHandler extends ConnectionHandler implements Comma
         }
     }
 }
+*/

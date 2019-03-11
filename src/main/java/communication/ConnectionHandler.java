@@ -1,6 +1,8 @@
 package communication;
 
 import com.google.gson.JsonObject;
+import communication.handlers.RequestHandler;
+import communication.handlers.RequestHandlerBuilder;
 import communication.security.AES;
 import communication.security.RSA;
 import core.ServerWrapper;
@@ -15,31 +17,64 @@ import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 
-public abstract class ConnectionHandler extends Thread{
+public class ConnectionHandler extends Thread{
 
     // Communication objects
-    protected Socket client;
+    private final Socket client;
     private BufferedReader in;
     private PrintWriter out;
-
-    // Encryption objects
     private AES aes;
+    private volatile boolean running;
 
-    //User data
-    protected ConnectionData clientData = new ConnectionData();
+    private ConnectionData clientData = new ConnectionData();
 
-    protected DataLoader dl = ServiceLocator.getService(DataLoader.class);
-    protected ServerWrapper server = ServiceLocator.getService(ServerWrapper.class);
+    private final DataLoader dl = ServiceLocator.getService(DataLoader.class);
+    private final RequestHandlerBuilder builder = new RequestHandlerBuilder(this);
+    private final ServerWrapper server;
 
-    public ConnectionHandler(Socket client) {
+    public ConnectionHandler(Socket client, ServerWrapper server) {
+        this.server = server;
         this.client = client;
     }
 
     public ConnectionData getClientData() {
         return this.clientData;
     }
+    public ServerWrapper getServer() { return server; }
 
-    protected void initialiseStreams() {
+    @Override
+    public void run() {
+        initialiseStreams();
+
+        running = true;
+        while (running) {
+            Request req = null;
+            try {
+                req = readRequest();
+            } catch (MalformedRequestException e) {
+                e.printStackTrace();
+                continue; // skip the iteration if the request is invalid
+            }
+
+            if(!req.getType().equals(RequestType.DISCONNECT)) {
+                // send confirmation if it is not a disconnect request
+                JsonObject content = new JsonObject();
+                content.addProperty("code", 100);
+                content.addProperty("timestamp", req.getTimestamp());
+                Request confirmation = new Request(RequestType.RESPONSE, content);
+                sendRequest(confirmation);
+            }
+
+            if(builder.isSupported(req.getType())) {
+                RequestHandler handler = builder.buildHandlerForRequest(req.getType());
+                handler.handle(req);
+            }else{
+                // TODO: 11-Mar-19 log to one of the console modes that an unsupported request was sent
+            }
+        }
+    }
+
+    private void initialiseStreams() {
         try {
             in = new BufferedReader(new InputStreamReader(client.getInputStream(), StandardCharsets.UTF_8));
             out = new PrintWriter(new OutputStreamWriter(client.getOutputStream(), StandardCharsets.UTF_8));
@@ -86,7 +121,7 @@ public abstract class ConnectionHandler extends Thread{
         return rsa;
     }
 
-    protected Request readRequest() throws MalformedRequestException {
+    private Request readRequest() throws MalformedRequestException {
         String encrypted = null;
         try {
             encrypted = in.readLine();
@@ -126,24 +161,25 @@ public abstract class ConnectionHandler extends Thread{
         try {
             client.close();
             // readRequest() will send a DISCONNECT request to the RequestHandler because it reads null
+            running = false;
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void sendServerMessage(String msg) {
-        JsonObject payload = new JsonObject();
-        payload.addProperty("action", "print");
-        payload.addProperty("message", dl.getMessage("prefix")+msg);
-        Request response = new Request(RequestType.ACTION, payload);
-        sendRequest(response);
+    public void sendPrefixedMessage(String msg) {
+        sendMessage(dl.getMessage("prefix")+msg);
     }
 
-    public void sendServerErrorMessage(String msg) {
+    public void sendPrefixedErrorMessage(String msg) {
+        sendMessage(dl.getMessage("error-prefix")+msg);
+    }
+
+    public void sendMessage(String msg) {
         JsonObject payload = new JsonObject();
         payload.addProperty("action", "print");
-        payload.addProperty("message", dl.getMessage("error-prefix")+msg);
-        Request response = new Request(RequestType.ACTION, payload);
-        sendRequest(response);
+        payload.addProperty("message", msg);
+        Request r = new Request(RequestType.ACTION, payload);
+        sendRequest(r);
     }
 }

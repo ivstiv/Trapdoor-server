@@ -3,7 +3,8 @@ package commands.implementations;
 import commands.CommandExecutor;
 import commands.CommandSender;
 import commands.SudoSession;
-import communication.ConnectionRequestHandler;
+import communication.ConnectionHandler;
+import communication.handlers.RequestHandler;
 import core.Console;
 import core.ServerWrapper;
 import core.ServiceLocator;
@@ -31,7 +32,7 @@ public class TellCommand implements CommandExecutor {
 
             //check if there is a client online with that username
             if(server.isUserOnline(recipient)) {
-                ConnectionRequestHandler targetUser = server.getConnectedClients()
+                ConnectionHandler targetUser = server.getConnectedClients()
                         .stream()
                         .filter(cl -> cl.getClientData().getUsername().equals(recipient))
                         .findFirst()
@@ -41,7 +42,7 @@ public class TellCommand implements CommandExecutor {
                 String msgForClient = buildMessage("", msg);
                 String msgForConsole = buildMessage("", msg);
 
-                targetUser.sendServerMessage(msgForClient);
+                targetUser.sendPrefixedMessage(msgForClient);
                 console.print(dl.getMessage("sending-msg")+recipient+":"+msgForConsole);
             }else{
                 console.print(recipient+" "+dl.getMessage("offline"));
@@ -50,12 +51,13 @@ public class TellCommand implements CommandExecutor {
 
 
 
-        if(sender instanceof ConnectionRequestHandler) {
-            ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
+        if(sender instanceof RequestHandler) {
+            RequestHandler handler = (RequestHandler) sender;
+            ConnectionHandler client = handler.getClient();
 
             // check if there is a sudo session
             if(!client.getClientData().hasSudoSession()) {
-                client.sendServerErrorMessage(dl.getMessage("perm-denied"));
+                client.sendPrefixedErrorMessage(dl.getMessage("perm-denied"));
                 return;
             }
 
@@ -63,14 +65,14 @@ public class TellCommand implements CommandExecutor {
 
             // check if it is authenticated
             if(!session.isAuthenticated()) {
-                client.sendServerErrorMessage(dl.getMessage("perm-denied"));
+                client.sendPrefixedErrorMessage(dl.getMessage("perm-denied"));
                 client.getClientData().destroySudoSession();
                 return;
             }
 
             // check for arguments
             if(args.length < 2) {
-                client.sendServerErrorMessage(dl.getMessage("missing-argument"));
+                client.sendPrefixedErrorMessage(dl.getMessage("missing-argument"));
                 return;
             }
 
@@ -79,7 +81,7 @@ public class TellCommand implements CommandExecutor {
 
             //check if there is a client online with that username
             if(server.isUserOnline(args[0])) {
-                ConnectionRequestHandler targetUser = server.getConnectedClients()
+                ConnectionHandler targetUser = server.getConnectedClients()
                         .stream()
                         .filter(cl -> cl.getClientData().getUsername().equals(recipient))
                         .findFirst()
@@ -89,10 +91,10 @@ public class TellCommand implements CommandExecutor {
                 String msgForRecipient = buildMessage("", msg);
                 String msgForSender = buildMessage("", msg);
 
-                targetUser.sendServerMessage(msgForRecipient);
-                client.sendServerMessage(dl.getMessage("sending-msg")+recipient+":"+msgForSender);
+                targetUser.sendPrefixedMessage(msgForRecipient);
+                client.sendPrefixedMessage(dl.getMessage("sending-msg")+recipient+":"+msgForSender);
             }else{
-                client.sendServerErrorMessage(recipient+" "+dl.getMessage("offline"));
+                client.sendPrefixedErrorMessage(recipient+" "+dl.getMessage("offline"));
             }
         }
     }

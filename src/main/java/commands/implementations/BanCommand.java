@@ -1,11 +1,11 @@
 package commands.implementations;
 
-import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import commands.CommandExecutor;
 import commands.CommandSender;
 import commands.SudoSession;
-import communication.ConnectionRequestHandler;
+import communication.ConnectionHandler;
+import communication.handlers.RequestHandler;
 import core.Console;
 import core.ServerWrapper;
 import core.ServiceLocator;
@@ -37,13 +37,13 @@ public class BanCommand implements CommandExecutor {
 
                 //check if there is a client online with that username and kick it
                 if(server.isUserOnline(args[0])) {
-                    ConnectionRequestHandler targetUser = server.getConnectedClients()
+                    ConnectionHandler targetUser = server.getConnectedClients()
                             .stream()
                             .filter(cl -> cl.getClientData().getUsername().equals(username))
                             .findFirst()
                             .get();
 
-                    targetUser.sendServerErrorMessage(dl.getMessage("banned"));
+                    targetUser.sendPrefixedErrorMessage(dl.getMessage("banned"));
                     targetUser.stopConnection();
                 }
 
@@ -53,12 +53,13 @@ public class BanCommand implements CommandExecutor {
             }
         }
 
-        if(sender instanceof ConnectionRequestHandler) {
-            ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
+        if(sender instanceof RequestHandler) {
+            RequestHandler handler = (RequestHandler) sender;
+            ConnectionHandler client = handler.getClient();
 
             // check if there is a sudo session
             if(!client.getClientData().hasSudoSession()) {
-                client.sendServerErrorMessage(dl.getMessage("perm-denied"));
+                client.sendPrefixedErrorMessage(dl.getMessage("perm-denied"));
                 return;
             }
 
@@ -66,14 +67,14 @@ public class BanCommand implements CommandExecutor {
 
             // check if it is authenticated
             if(!session.isAuthenticated()) {
-                client.sendServerErrorMessage(dl.getMessage("perm-denied"));
+                client.sendPrefixedErrorMessage(dl.getMessage("perm-denied"));
                 client.getClientData().destroySudoSession();
                 return;
             }
 
             // check for arguments
             if(args.length < 1) {
-                client.sendServerErrorMessage(dl.getMessage("missing-argument"));
+                client.sendPrefixedErrorMessage(dl.getMessage("missing-argument"));
                 return;
             }
 
@@ -87,19 +88,19 @@ public class BanCommand implements CommandExecutor {
 
                 //check if there is a client online with that username and kick it
                 if(server.isUserOnline(args[0])) {
-                    ConnectionRequestHandler targetUser = server.getConnectedClients()
+                    ConnectionHandler targetUser = server.getConnectedClients()
                             .stream()
                             .filter(cl -> cl.getClientData().getUsername().equals(username))
                             .findFirst()
                             .get();
 
-                    targetUser.sendServerErrorMessage(dl.getMessage("banned"));
+                    targetUser.sendPrefixedErrorMessage(dl.getMessage("banned"));
                     targetUser.stopConnection();
                 }
 
-                client.sendServerMessage(username+" "+dl.getMessage("cl-banned"));
+                client.sendPrefixedMessage(username+" "+dl.getMessage("cl-banned"));
             }else{
-                client.sendServerErrorMessage(username+" "+dl.getMessage("cl-already-banned"));
+                client.sendPrefixedErrorMessage(username+" "+dl.getMessage("cl-already-banned"));
             }
         }
     }

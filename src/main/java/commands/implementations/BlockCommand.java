@@ -2,7 +2,8 @@ package commands.implementations;
 
 import commands.CommandExecutor;
 import commands.CommandSender;
-import communication.ConnectionRequestHandler;
+import communication.ConnectionHandler;
+import communication.handlers.RequestHandler;
 import core.Console;
 import core.ServerWrapper;
 import core.ServiceLocator;
@@ -17,19 +18,19 @@ public class BlockCommand implements CommandExecutor {
         ServerWrapper server = ServiceLocator.getService(ServerWrapper.class);
         DataLoader dl = ServiceLocator.getService(DataLoader.class);
 
-        if (sender instanceof ConnectionRequestHandler) {
-
-            ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
+        if(sender instanceof RequestHandler) {
+            RequestHandler handler = (RequestHandler) sender;
+            ConnectionHandler client = handler.getClient();
 
             // check if arguments exists
             if(args.length < 1) {
-                client.sendServerErrorMessage(dl.getMessage("missing-argument"));
+                client.sendPrefixedErrorMessage(dl.getMessage("missing-argument"));
                 return;
             }
 
             //check if the user tries to block himself
             if(client.getClientData().getUsername().equals(args[0])) {
-                client.sendServerErrorMessage(dl.getMessage("cant-block"));
+                client.sendPrefixedErrorMessage(dl.getMessage("cant-block"));
                 return;
             }
 
@@ -42,12 +43,12 @@ public class BlockCommand implements CommandExecutor {
                     // block the username
                     client.getClientData().blockUsername(args[0]);
 
-                    client.sendServerMessage(args[0]+" "+dl.getMessage("success-blocked"));
+                    client.sendPrefixedMessage(args[0]+" "+dl.getMessage("success-blocked"));
                 }else{
-                    client.sendServerErrorMessage(dl.getMessage("already-blocked"));
+                    client.sendPrefixedErrorMessage(dl.getMessage("already-blocked"));
                 }
             }else{
-                client.sendServerErrorMessage(args[0]+" "+dl.getMessage("offline"));
+                client.sendPrefixedErrorMessage(args[0]+" "+dl.getMessage("offline"));
             }
         }
 

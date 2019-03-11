@@ -3,7 +3,8 @@ package commands.implementations;
 import commands.CommandExecutor;
 import commands.CommandSender;
 import commands.SudoSession;
-import communication.ConnectionRequestHandler;
+import communication.ConnectionHandler;
+import communication.handlers.RequestHandler;
 import core.Console;
 import core.ServerWrapper;
 import core.ServiceLocator;
@@ -28,13 +29,13 @@ public class KickCommand implements CommandExecutor {
 
             //check if there is a client online with that username and kick it
             if(server.isUserOnline(username)) {
-                ConnectionRequestHandler targetUser = server.getConnectedClients()
+                ConnectionHandler targetUser = server.getConnectedClients()
                         .stream()
                         .filter(cl -> cl.getClientData().getUsername().equals(username))
                         .findFirst()
                         .get();
 
-                targetUser.sendServerMessage(dl.getMessage("kicked"));
+                targetUser.sendPrefixedMessage(dl.getMessage("kicked"));
                 targetUser.stopConnection();
 
                 console.print(username+" "+dl.getMessage("cl-kicked"));
@@ -43,12 +44,13 @@ public class KickCommand implements CommandExecutor {
             }
         }
 
-        if(sender instanceof ConnectionRequestHandler) {
-            ConnectionRequestHandler client = (ConnectionRequestHandler) sender;
+        if(sender instanceof RequestHandler) {
+            RequestHandler handler = (RequestHandler) sender;
+            ConnectionHandler client = handler.getClient();
 
             // check if there is a sudo session
             if(!client.getClientData().hasSudoSession()) {
-                client.sendServerErrorMessage(dl.getMessage("perm-denied"));
+                client.sendPrefixedErrorMessage(dl.getMessage("perm-denied"));
                 return;
             }
 
@@ -56,14 +58,14 @@ public class KickCommand implements CommandExecutor {
 
             // check if it is authenticated
             if(!session.isAuthenticated()) {
-                client.sendServerErrorMessage(dl.getMessage("perm-denied"));
+                client.sendPrefixedErrorMessage(dl.getMessage("perm-denied"));
                 client.getClientData().destroySudoSession();
                 return;
             }
 
             // check for arguments
             if(args.length < 1) {
-                client.sendServerErrorMessage(dl.getMessage("missing-argument"));
+                client.sendPrefixedErrorMessage(dl.getMessage("missing-argument"));
                 return;
             }
 
@@ -71,18 +73,18 @@ public class KickCommand implements CommandExecutor {
 
             //check if there is a client online with that username and kick it
             if(server.isUserOnline(username)) {
-                ConnectionRequestHandler targetUser = server.getConnectedClients()
+                ConnectionHandler targetUser = server.getConnectedClients()
                         .stream()
                         .filter(cl -> cl.getClientData().getUsername().equals(username))
                         .findFirst()
                         .get();
 
-                targetUser.sendServerMessage(dl.getMessage("kicked"));
+                targetUser.sendPrefixedMessage(dl.getMessage("kicked"));
                 targetUser.stopConnection();
 
-                client.sendServerMessage(username+" "+dl.getMessage("kicked-confirm"));
+                client.sendPrefixedMessage(username+" "+dl.getMessage("kicked-confirm"));
             }else{
-                client.sendServerErrorMessage(username+" "+dl.getMessage("offline"));
+                client.sendPrefixedErrorMessage(username+" "+dl.getMessage("offline"));
             }
         }
     }
