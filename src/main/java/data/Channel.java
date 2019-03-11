@@ -44,7 +44,7 @@ public class Channel {
         String senderUsername = client.getClientData().getUsername();
         for(ConnectionHandler c : clients) {
             if(!c.getClientData().getBlockedUsernames().contains(senderUsername)) // send if the sender is not blocked
-                if(!c.equals(client)) // send to everyone except to him
+//                if(!c.equals(client)) // send to everyone except to him
                     c.sendRequest(req);
         }
     }
