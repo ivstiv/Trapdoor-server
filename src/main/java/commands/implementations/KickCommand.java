@@ -39,6 +39,7 @@ public class KickCommand implements CommandExecutor {
                 targetUser.stopConnection();
 
                 console.print(username+" "+dl.getMessage("cl-kicked"));
+                targetUser.getClientData().getActiveChannel().broadcastPrefixedPrint(username+" "+dl.getMessage("kicked-notify"));
             }else{
                 console.print(username+" "+dl.getMessage("offline"));
             }
@@ -82,7 +83,8 @@ public class KickCommand implements CommandExecutor {
                 targetUser.sendPrefixedMessage(dl.getMessage("kicked"));
                 targetUser.stopConnection();
 
-                client.sendPrefixedMessage(username+" "+dl.getMessage("kicked-confirm"));
+                client.sendPrefixedMessage(dl.getMessage("kicked-confirm")+" "+username+"!");
+                targetUser.getClientData().getActiveChannel().broadcastPrefixedPrint(username+" "+dl.getMessage("kicked-notify"));
             }else{
                 client.sendPrefixedErrorMessage(username+" "+dl.getMessage("offline"));
             }

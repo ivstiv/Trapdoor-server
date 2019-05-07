@@ -13,13 +13,15 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.function.Predicate;
 
 public class ServerWrapper extends Thread{
 
     private List<Channel> channels;
-    private Set<ConnectionHandler> connectedClients = new HashSet<>();   // holds all connections that have established RSA tunnel
-    private Set<ConnectionHandler> preAuthClients = new HashSet<>();     // holds all connections that haven't established RSA tunnel
+    private Set<ConnectionHandler> connectedClients = ConcurrentHashMap.newKeySet();   // holds all connections that have established RSA tunnel
+    private Set<ConnectionHandler> preAuthClients = ConcurrentHashMap.newKeySet();     // holds all connections that haven't established RSA tunnel
     private CommandRegister commandRegister;
     private Console console = new Console(this);
     private volatile boolean running = true;

@@ -39,9 +39,10 @@ public class UnmuteCommand implements CommandExecutor {
                 // check if the user is muted
                 if(targetUser.getClientData().isMuted()) {
                     // unmute the user
-                    targetUser.sendPrefixedMessage(dl.getMessage("unmuted"));
+                    //targetUser.sendPrefixedMessage(dl.getMessage("unmuted"));
                     targetUser.getClientData().setMuted(false);
                     console.print(username+" "+dl.getMessage("cl-unmuted"));
+                    targetUser.getClientData().getActiveChannel().broadcastPrefixedPrint(username+" "+dl.getMessage("unmuted-notify"));
                 }else{
                     console.print(username+" "+dl.getMessage("cl-not-muted"));
                 }
@@ -90,9 +91,10 @@ public class UnmuteCommand implements CommandExecutor {
                 // check if the user is muted
                 if(targetUser.getClientData().isMuted()) {
                     // unmute the user
-                    targetUser.sendPrefixedMessage(dl.getMessage("unmuted"));
+                    //targetUser.sendPrefixedMessage(dl.getMessage("unmuted"));
                     targetUser.getClientData().setMuted(false);
-                    client.sendPrefixedMessage(username+" "+dl.getMessage("unmuted-confirm"));
+                    client.sendPrefixedMessage(dl.getMessage("unmuted-confirm")+" "+username+"!");
+                    targetUser.getClientData().getActiveChannel().broadcastPrefixedPrint(username+" "+dl.getMessage("unmuted-notify"));
                 }else{
                     client.sendPrefixedErrorMessage(username+" "+dl.getMessage("not-muted"));
                 }

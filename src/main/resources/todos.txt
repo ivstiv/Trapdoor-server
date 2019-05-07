@@ -42,10 +42,8 @@ RC
 	- all sudo commands (won't require sudo)
 
 Long-term todos:
-    - notify all users in the channel that somebody got: banned, kicked, muted
     - send an error code if the aes fails
     - sanitize username input
-    - refactor the relationship between the handlers
     - temp ban and temp mute with schedule worker and saving of the data on restart
     - Unified colors across console and clients. (Codes and actual colors :D)
     - update readme

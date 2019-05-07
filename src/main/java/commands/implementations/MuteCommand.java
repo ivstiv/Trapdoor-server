@@ -42,9 +42,10 @@ public class MuteCommand implements CommandExecutor {
                     console.print(username+" "+dl.getMessage("cl-already-muted"));
                 }else{
                     // mute the user
-                    targetUser.sendPrefixedErrorMessage(dl.getMessage("muted"));
+                    //targetUser.sendPrefixedErrorMessage(dl.getMessage("muted"));
                     targetUser.getClientData().setMuted(true);
                     console.print(username+" "+dl.getMessage("cl-muted"));
+                    targetUser.getClientData().getActiveChannel().broadcastPrefixedPrint(username+" "+dl.getMessage("muted-notify"));
                 }
 
             }else{
@@ -94,9 +95,10 @@ public class MuteCommand implements CommandExecutor {
                     client.sendPrefixedErrorMessage(username+" "+dl.getMessage("already-muted"));
                 }else{
                     // mute the user
-                    targetUser.sendPrefixedMessage(dl.getMessage("muted"));
+                    //targetUser.sendPrefixedMessage(dl.getMessage("muted"));
                     targetUser.getClientData().setMuted(true);
-                    client.sendPrefixedMessage(username+" "+dl.getMessage("muted-confirm"));
+                    client.sendPrefixedMessage(dl.getMessage("muted-confirm")+" "+username+"!");
+                    targetUser.getClientData().getActiveChannel().broadcastPrefixedPrint(username+" "+dl.getMessage("muted-notify"));
                 }
 
             }else{

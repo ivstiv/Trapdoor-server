@@ -45,6 +45,7 @@ public class BanCommand implements CommandExecutor {
 
                     targetUser.sendPrefixedErrorMessage(dl.getMessage("banned"));
                     targetUser.stopConnection();
+                    targetUser.getClientData().getActiveChannel().broadcastPrefixedPrint(username+" "+dl.getMessage("banned-notify"));
                 }
 
                 console.print(username+" "+dl.getMessage("cl-banned"));
@@ -96,9 +97,10 @@ public class BanCommand implements CommandExecutor {
 
                     targetUser.sendPrefixedErrorMessage(dl.getMessage("banned"));
                     targetUser.stopConnection();
+                    targetUser.getClientData().getActiveChannel().broadcastPrefixedPrint(username+" "+dl.getMessage("banned-notify"));
                 }
 
-                client.sendPrefixedMessage(username+" "+dl.getMessage("cl-banned"));
+                client.sendPrefixedMessage(dl.getMessage("banned-confirm")+" "+username+"!");
             }else{
                 client.sendPrefixedErrorMessage(username+" "+dl.getMessage("cl-already-banned"));
             }

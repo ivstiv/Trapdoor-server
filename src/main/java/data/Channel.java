@@ -8,12 +8,13 @@ import communication.RequestType;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Channel {
 
     private final ChannelType type;
     private final String name, password;
-    private final Set<ConnectionHandler> clients = new HashSet<>();
+    private final Set<ConnectionHandler> clients = ConcurrentHashMap.newKeySet();
 
     public Channel(ChannelType type, String name, String password) {
         this.type = type;
@@ -44,18 +45,19 @@ public class Channel {
         String senderUsername = client.getClientData().getUsername();
         for(ConnectionHandler c : clients) {
             if(!c.getClientData().getBlockedUsernames().contains(senderUsername)) // send if the sender is not blocked
-//                if(!c.equals(client)) // send to everyone except to him
                     c.sendRequest(req);
         }
     }
 
     public void broadcastPrint(String message) {
-        JsonObject content = new JsonObject();
-        content.addProperty("action", "print");
-        content.addProperty("message", message);
-        Request req = new Request(RequestType.ACTION, content);
         for(ConnectionHandler client : clients) {
-            client.sendRequest(req);
+            client.sendMessage(message);
+        }
+    }
+
+    public void broadcastPrefixedPrint(String message) {
+        for(ConnectionHandler client : clients) {
+            client.sendPrefixedMessage(message);
         }
     }
 
